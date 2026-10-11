@@ -126,7 +126,6 @@ type TopAuthor = { author: string; posts_count: number; likes_count: number; ava
 type DailyStats = { posts: DailyStat[]; users: DailyStat[]; comments: DailyStat[] }
 type TotalStats = { users_count: number; posts_count: number; pending_reports: number; banned_users: number; groups_count: number }
 
-// ===== ПРОДАКШН: указываем бэкенд на Render =====
 const API_URL = 'https://my-social-network-78kr.onrender.com/api'
 const BACKEND_URL = 'https://my-social-network-78kr.onrender.com'
 
@@ -523,11 +522,20 @@ function TrendingBlock({ trending, onHashtagClick }: { trending: TrendingHashtag
   )
 }
 
-function ReportModal({ targetType, targetId, onClose, onSubmit }: { targetType: 'post' | 'comment' | 'user' | 'group'; targetId: number; onClose: () => void; onSubmit: (reason: string, comment: string) => Promise<void> }) {
+type ReportModalProps = {
+  targetType: 'post' | 'comment' | 'user' | 'group'
+  onClose: () => void
+  onSubmit: (reason: string, comment: string) => Promise<void>
+}
+
+function ReportModal({ targetType, onClose, onSubmit }: ReportModalProps) {
   const [reason, setReason] = useState(REPORT_REASONS[0])
   const [comment, setComment] = useState('')
   const [sending, setSending] = useState(false)
-  const handleSubmit = async () => { setSending(true); try { await onSubmit(reason, comment) } finally { setSending(false) } }
+  const handleSubmit = async () => {
+    setSending(true)
+    try { await onSubmit(reason, comment) } finally { setSending(false) }
+  }
   const typeLabel = targetType === 'post' ? 'пост' : targetType === 'comment' ? 'комментарий' : targetType === 'group' ? 'группу' : 'пользователя'
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }} onClick={onClose}>
@@ -1482,7 +1490,7 @@ function App() {
     return (
       <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
         <Header backButton backLabel="← К группам" customBack={handleOpenGroups} />
-        {reportModal && <ReportModal targetType={reportModal.type} targetId={reportModal.id} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
+        {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
         <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 20, marginBottom: 20, background: 'var(--bg-card)' }}>
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 12 }}>
             <GroupIcon emoji={g.cover_emoji} name={g.name} size={72} />
@@ -1815,7 +1823,7 @@ function App() {
     <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
       <ScrollToTop />
       <Header />
-      {reportModal && <ReportModal targetType={reportModal.type} targetId={reportModal.id} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
+      {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
 
       <div style={{ position: 'relative', marginBottom: 12 }}>
         <input type="text" className="search-input" placeholder="🔍 Поиск пользователей, постов, групп..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '10px 40px 10px 14px', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, fontSize: 14, boxSizing: 'border-box' }} />

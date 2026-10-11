@@ -1,6 +1,7 @@
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 
-const API_URL = 'http://localhost:8080/api'
+const API_URL = 'https://my-social-network-78kr.onrender.com/api'
 
 type AuthProps = {
   onLogin: (token: string, username: string) => void
@@ -35,7 +36,6 @@ function Auth({ onLogin }: AuthProps) {
         return
       }
 
-      // Успех! Передаём токен и имя родителю
       onLogin(data.token, data.user.username)
     } catch (err) {
       setError('Не удалось связаться с сервером')
