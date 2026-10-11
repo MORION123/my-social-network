@@ -1,0 +1,89 @@
+:root {
+  --bg-body: #ffffff;
+  --bg-card: #f9f9f9;
+  --bg-card-edit: #fff8e1;
+  --bg-input: #ffffff;
+  --bg-panel: #ffffff;
+  --bg-hover: #f0f0f0;
+  --bg-reply: #ffffff;
+  --bg-secondary: #eeeeee;
+
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --text-light: #aaaaaa;
+  --text-on-accent: #ffffff;
+
+  --border: #dddddd;
+  --border-light: #eeeeee;
+  --border-input: #cccccc;
+  --border-strong: #bbbbbb;
+
+  --accent: #007bff;
+  --accent-hover: #0069d9;
+  --success: #28a745;
+  --danger: #dc3545;
+  --like: #e0245e;
+
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark {
+  --bg-body: #18191a;
+  --bg-card: #242526;
+  --bg-card-edit: #3a3520;
+  --bg-input: #3a3b3c;
+  --bg-panel: #242526;
+  --bg-hover: #3a3b3c;
+  --bg-reply: #2e2f30;
+  --bg-secondary: #3a3b3c;
+
+  --text-primary: #e4e6eb;
+  --text-secondary: #b0b3b8;
+  --text-muted: #8a8d91;
+  --text-light: #6b6e72;
+  --text-on-accent: #ffffff;
+
+  --border: #3e4042;
+  --border-light: #3a3b3c;
+  --border-input: #4e4f50;
+  --border-strong: #5a5b5c;
+
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-body);
+  color: var(--text-primary);
+  transition: background 0.2s ease, color 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  background: var(--bg-body);
+}
+
+input, textarea, button, select {
+  font-family: inherit;
+  color: inherit;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Скрыть стрелки в input[type=number] (если понадобится) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Моя соцсеть",
+  "short_name": "Соцсеть",
+  "description": "Социальная сеть с постами, чатами и группами",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#18191a",
+  "theme_color": "#007bff",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["social", "communication"]
+}
