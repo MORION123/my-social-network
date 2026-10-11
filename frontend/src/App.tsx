@@ -126,10 +126,9 @@ type TopAuthor = { author: string; posts_count: number; likes_count: number; ava
 type DailyStats = { posts: DailyStat[]; users: DailyStat[]; comments: DailyStat[] }
 type TotalStats = { users_count: number; posts_count: number; pending_reports: number; banned_users: number; groups_count: number }
 
-// ===== ВОТ ОНО, ИЗМЕНЕНИЕ =====
-const API_URL = `http://${window.location.hostname}:8080/api`
-const BACKEND_URL = `http://${window.location.hostname}:8080`
-// =============================
+// ===== ПРОДАКШН: указываем бэкенд на Render =====
+const API_URL = 'https://my-social-network-78kr.onrender.com/api'
+const BACKEND_URL = 'https://my-social-network-78kr.onrender.com'
 
 const PAGE_SIZE = 20
 const QUICK_EMOJIS = ['❤️', '😂', '👍', '🔥', '😮', '😢']
