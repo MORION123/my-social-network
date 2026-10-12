@@ -47,7 +47,7 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .post-actions button { font-size: 14px !important; padding: 4px 6px !important; }
   .create-post-form { padding: 12px !important; }
   .search-input { padding: 10px 36px 10px 12px !important; font-size: 13px !important; }
-  .scroll-to-top { bottom: 88px !important; right: 16px !important; width: 42px !important; height: 42px !important; font-size: 20px !important; }
+  .scroll-to-top { bottom: 100px !important; right: 16px !important; width: 42px !important; height: 42px !important; font-size: 20px !important; }
   .app-header-buttons button { font-size: 18px !important; padding: 3px 5px !important; }
   .modal-box { padding: 18px !important; margin: 12px !important; }
   .modal-box h3 { font-size: 17px !important; }
@@ -217,7 +217,7 @@ function ScrollToTop() {
   if (!show) return null
   return (
     <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} title="Наверх" className="scroll-to-top"
-      style={{ position: 'fixed', bottom: 88, right: 24, width: 48, height: 48, borderRadius: '50%', background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 22, boxShadow: 'var(--shadow)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>↑</button>
+      style={{ position: 'fixed', bottom: 100, right: 24, width: 48, height: 48, borderRadius: '50%', background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 22, boxShadow: 'var(--shadow)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>↑</button>
   )
 }
 
@@ -1443,21 +1443,23 @@ function App() {
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0,
       background: 'var(--bg-panel)', borderTop: '1px solid var(--border)',
-      display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-      padding: '8px 0', zIndex: 400,
+      zIndex: 400,
       paddingBottom: 'max(8px, env(safe-area-inset-bottom))'
     }}>
-      <button onClick={handleBackToFeed} title="Лента" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', color: viewMode === 'feed' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-        <IconHome size={22} /><span style={{ fontSize: 10 }}>Лента</span>
-      </button>
-      <button onClick={handleOpenMessages} title="Сообщения" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', position: 'relative', color: viewMode === 'messages' || viewMode === 'dialog' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-        <IconMessage size={22} />
-        {unreadMessages > 0 && <span style={{ position: 'absolute', top: 0, right: 8, background: 'var(--danger)', color: '#fff', fontSize: 10, fontWeight: 'bold', borderRadius: '50%', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{unreadMessages > 99 ? '99+' : unreadMessages}</span>}
-        <span style={{ fontSize: 10 }}>Сообщения</span>
-      </button>
-      <button onClick={() => handleAuthorClick(username)} title="Профиль" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', color: viewMode === 'profile' && viewingUser === username ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-        <IconUser size={22} /><span style={{ fontSize: 10 }}>Профиль</span>
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '8px 0' }}>
+        <button onClick={handleBackToFeed} title="Лента" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', color: viewMode === 'feed' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <IconHome size={22} /><span style={{ fontSize: 10 }}>Лента</span>
+        </button>
+        <button onClick={handleOpenMessages} title="Сообщения" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', position: 'relative', color: viewMode === 'messages' || viewMode === 'dialog' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <IconMessage size={22} />
+          {unreadMessages > 0 && <span style={{ position: 'absolute', top: 0, right: 8, background: 'var(--danger)', color: '#fff', fontSize: 10, fontWeight: 'bold', borderRadius: '50%', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{unreadMessages > 99 ? '99+' : unreadMessages}</span>}
+          <span style={{ fontSize: 10 }}>Сообщения</span>
+        </button>
+        <button onClick={() => handleAuthorClick(username)} title="Профиль" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', color: viewMode === 'profile' && viewingUser === username ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <IconUser size={22} /><span style={{ fontSize: 10 }}>Профиль</span>
+        </button>
+      </div>
+      <div className="app-footer">by Akhmaev AI</div>
     </div>
   )
 
