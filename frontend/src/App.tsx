@@ -639,6 +639,7 @@ function App() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>('')
   const [sending, setSending] = useState(false)
+  const [showCreatePost, setShowCreatePost] = useState(false)
 
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('theme') as Theme | null
@@ -937,7 +938,7 @@ function App() {
       const res = await fetch(`${API_URL}/posts`, { method: 'POST', headers: authHeaders(token), body: fd })
       if (res.status === 401) { handleLogout(); return }
       if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || 'Ошибка') }
-      setText(''); handleImageSelect(null)
+      setText(''); handleImageSelect(null); setShowCreatePost(false)
       if (feedType === 'recommended') loadRecommended(token)
       else loadPosts(token, feedType)
       loadTrending()
@@ -1468,7 +1469,7 @@ function App() {
         </button>
       ) : (
         <div className="brand" onClick={handleBackToFeed}>
-          <img src="/LOGO_M.png" alt="MORION" className="brand-logo" />
+          <span className="brand-name">MORION</span>
         </div>
       )}
       <div className="app-header-buttons" style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -1892,13 +1893,72 @@ function App() {
       <Header />
       {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
 
+      {/* Модальное окно создания поста */}
+      {showCreatePost && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 1000, padding: 20, paddingTop: 60 }} onClick={() => setShowCreatePost(false)}>
+          <div className="modal-box" style={{ background: 'var(--bg-panel)', borderRadius: 12, padding: 20, maxWidth: 560, width: '100%', border: '1px solid var(--border)', maxHeight: '85vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>Новый пост</h3>
+              <button onClick={() => setShowCreatePost(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 4, display: 'flex' }}><IconX size={20} /></button>
+            </div>
+            <form onSubmit={handleCreatePost}>
+              <textarea placeholder={`Что нового, ${username}? Добавь #хэштег для поиска`} value={text} onChange={e => setText(e.target.value)} disabled={sending} rows={5} autoFocus style={{ width: '100%', padding: 12, marginBottom: 10, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 8, fontSize: 14, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
+              {imagePreview && (
+                <div style={{ position: 'relative', marginBottom: 10 }}>
+                  <img src={imagePreview} alt="preview" style={{ width: '100%', maxHeight: 300, objectFit: 'cover', borderRadius: 8, display: 'block' }} />
+                  <button type="button" onClick={() => handleImageSelect(null)} style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconX size={16} /></button>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <label style={{ padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderRadius: 6, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <IconCamera size={16} /> {imageFile ? 'Заменить' : 'Картинка'}
+                  <input type="file" accept="image/*" onChange={e => handleImageSelect(e.target.files?.[0] || null)} disabled={sending} style={{ display: 'none' }} />
+                </label>
+                <button type="submit" disabled={sending || !text.trim()} style={{ flex: 1, minWidth: 120, padding: '10px 20px', background: (sending || !text.trim()) ? 'var(--text-light)' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 8, cursor: (sending || !text.trim()) ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 600 }}>{sending ? 'Отправка...' : 'Опубликовать'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div style={{ position: 'relative', marginBottom: 12 }}>
         <input type="text" className="search-input" placeholder="Поиск пользователей, постов, групп..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '10px 40px 10px 38px', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 8, fontSize: 14, boxSizing: 'border-box' }} />
         <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex', pointerEvents: 'none' }}><IconSearch size={16} /></span>
         {searchQuery && <button onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 4, lineHeight: 1, display: 'flex' }}><IconX size={16} /></button>}
       </div>
 
-      {!isSearching && <TrendingBlock trending={trending} onHashtagClick={handleHashtagClick} />}
+      {!isSearching && (
+        <>
+          {/* Кнопка создания поста */}
+          <button
+            onClick={() => setShowCreatePost(true)}
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              marginBottom: 16,
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 10,
+              cursor: 'pointer',
+              color: 'var(--text-muted)',
+              fontSize: 14,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              textAlign: 'left',
+              transition: 'background 0.15s ease'
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-card)')}
+          >
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--accent-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)', flexShrink: 0 }}>
+              <IconPlus size={18} />
+            </div>
+            <span>Что нового, {username}?</span>
+          </button>
+          <TrendingBlock trending={trending} onHashtagClick={handleHashtagClick} />
+        </>
+      )}
 
       {isSearching ? (
         <>
@@ -1958,24 +2018,6 @@ function App() {
         </>
       ) : (
         <>
-          <div className="create-post-form" style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 16, marginBottom: 16, background: 'var(--bg-card)' }}>
-            <form onSubmit={handleCreatePost}>
-              <textarea placeholder={`Что нового, ${username}?`} value={text} onChange={e => setText(e.target.value)} disabled={sending} rows={3} style={{ width: '100%', padding: 10, marginBottom: 8, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 6, fontSize: 14, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
-              {imagePreview && (
-                <div style={{ position: 'relative', marginBottom: 8 }}>
-                  <img src={imagePreview} alt="preview" style={{ width: '100%', maxHeight: 300, objectFit: 'cover', borderRadius: 6, display: 'block' }} />
-                  <button type="button" onClick={() => handleImageSelect(null)} style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconX size={16} /></button>
-                </div>
-              )}
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <label style={{ padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderRadius: 6, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <IconCamera size={16} /> {imageFile ? 'Заменить' : 'Картинка'}
-                  <input type="file" accept="image/*" onChange={e => handleImageSelect(e.target.files?.[0] || null)} disabled={sending} style={{ display: 'none' }} />
-                </label>
-                <button type="submit" disabled={sending || !text.trim()} style={{ flex: 1, minWidth: 120, padding: '8px 16px', background: (sending || !text.trim()) ? 'var(--text-light)' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: (sending || !text.trim()) ? 'not-allowed' : 'pointer', fontSize: 14 }}>{sending ? 'Отправка...' : 'Опубликовать'}</button>
-              </div>
-            </form>
-          </div>
           <div className="feed-tabs" style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <button onClick={() => handleFeedChange('all')} style={{ flex: 1, padding: 10, fontSize: 13, cursor: 'pointer', background: feedType === 'all' ? 'var(--accent)' : 'var(--bg-secondary)', color: feedType === 'all' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 6 }}>Все</button>
             <button onClick={() => handleFeedChange('following')} style={{ flex: 1, padding: 10, fontSize: 13, cursor: 'pointer', background: feedType === 'following' ? 'var(--accent)' : 'var(--bg-secondary)', color: feedType === 'following' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 6 }}>Подписки</button>
