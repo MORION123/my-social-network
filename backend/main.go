@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
+	"math/big"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -13,6 +15,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -21,13 +25,17 @@ import (
 // ===== Модели =====
 
 type User struct {
-	ID        uint      `json:"id" gorm:"primaryKey"`
-	Username  string    `json:"username" gorm:"uniqueIndex;not null"`
-	Password  string    `json:"-" gorm:"not null"`
-	Avatar    string    `json:"avatar"`
-	IsAdmin   bool      `json:"is_admin" gorm:"default:false"`
-	IsBanned  bool      `json:"is_banned" gorm:"default:false"`
-	CreatedAt time.Time `json:"created_at"`
+	ID              uint      `json:"id" gorm:"primaryKey"`
+	Username        string    `json:"username" gorm:"uniqueIndex;not null"`
+	Email           string    `json:"email" gorm:"uniqueIndex;not null"`
+	Password        string    `json:"-" gorm:"not null"`
+	Avatar          string    `json:"avatar"`
+	IsAdmin         bool      `json:"is_admin" gorm:"default:false"`
+	IsBanned        bool      `json:"is_banned" gorm:"default:false"`
+	IsVerified      bool      `json:"is_verified" gorm:"default:false"`
+	VerifyToken     string    `json:"-"`
+	VerifyExpiresAt time.Time `json:"-"`
+	CreatedAt       time.Time `json:"created_at"`
 }
 
 type Post struct {
@@ -175,12 +183,8 @@ var jwtSecret = []byte("very-secret-key-change-in-production")
 var hashtagRegex = regexp.MustCompile(`#([\p{L}\p{N}_]+)`)
 
 func main() {
-	// ===== Подключение к базе данных =====
-	// В продакшене берём строку подключения из переменной окружения DATABASE_URL
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		// Fallback для локальной разработки
-		// ⚠️ ЗАМЕНИТЕ "ваш_пароль" на реальный пароль от локального PostgreSQL!
 		dsn = "host=localhost user=postgres password=Vodopad777 dbname=social_network port=5432 sslmode=disable"
 	}
 
@@ -237,6 +241,7 @@ func main() {
 	})
 	r.POST("/api/register", registerHandler)
 	r.POST("/api/login", loginHandler)
+	r.GET("/api/verify", verifyEmailHandler)
 	r.GET("/api/posts", getPostsHandler)
 	r.GET("/api/posts/:id", getPostHandler)
 	r.GET("/api/users/:username", getUserProfileHandler)
@@ -312,16 +317,60 @@ func main() {
 	r.Run(":" + port)
 }
 
-// ===== Хендлеры =====
+// ===== Хелперы для email =====
+
+func generateRandomToken() string {
+	n, _ := rand.Int(rand.Reader, big.NewInt(1000000000))
+	return fmt.Sprintf("%d", n.Int64())
+}
+
+func sendVerificationEmail(email, username, token string) error {
+	from := mail.NewEmail("MORION", "noreply@morionn.ru")
+	subject := "Подтверждение регистрации на MORION"
+	to := mail.NewEmail(username, email)
+	appURL := os.Getenv("APP_URL")
+	if appURL == "" {
+		appURL = "https://morionn.ru"
+	}
+	verificationLink := fmt.Sprintf("%s/?verify_token=%s&verify_email=%s", appURL, token, email)
+
+	htmlContent := fmt.Sprintf(`
+		<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+			<h2 style="color: #4a6fa5;">Добро пожаловать в MORION!</h2>
+			<p>Здравствуйте, %s!</p>
+			<p>Спасибо за регистрацию. Чтобы подтвердить ваш email, нажмите на кнопку ниже:</p>
+			<div style="text-align: center; margin: 30px 0;">
+				<a href="%s" style="background-color: #4a6fa5; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">Подтвердить Email</a>
+			</div>
+			<p>Если кнопка не работает, скопируйте и вставьте эту ссылку в браузер:</p>
+			<p style="word-break: break-all; color: #4a6fa5;">%s</p>
+			<p style="color: #888; font-size: 12px;">Ссылка действительна в течение 24 часов.</p>
+		</div>
+	`, username, verificationLink, verificationLink)
+
+	message := mail.NewSingleEmail(from, subject, to, "Подтвердите email", htmlContent)
+	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY"))
+	response, err := client.Send(message)
+	if err != nil {
+		return err
+	}
+	if response.StatusCode >= 400 {
+		return fmt.Errorf("sendgrid error: %s", response.Body)
+	}
+	return nil
+}
+
+// ===== Хендлеры: аутентификация =====
 
 func registerHandler(c *gin.Context) {
 	var input struct {
 		Username string `json:"username" binding:"required,min=3"`
+		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required,min=6"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Имя минимум 3 символа, пароль — 6"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Проверьте имя, email и пароль (имя от 3 символов, пароль от 6)"})
 		return
 	}
 
@@ -331,56 +380,73 @@ func registerHandler(c *gin.Context) {
 		return
 	}
 
-	user := User{Username: input.Username, Password: string(hashedPassword)}
-
-	if result := db.Create(&user); result.Error != nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "Это имя уже занято"})
+	var count int64
+	db.Model(&User{}).Where("username = ? OR email = ?", input.Username, input.Email).Count(&count)
+	if count > 0 {
+		c.JSON(http.StatusConflict, gin.H{"error": "Это имя или email уже занято"})
 		return
 	}
 
-	var count int64
-	db.Model(&User{}).Count(&count)
-	if count == 1 {
+	verifyToken := generateRandomToken()
+	user := User{
+		Username:        input.Username,
+		Email:           input.Email,
+		Password:        string(hashedPassword),
+		IsVerified:      false,
+		VerifyToken:     verifyToken,
+		VerifyExpiresAt: time.Now().Add(24 * time.Hour),
+	}
+
+	if result := db.Create(&user); result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось создать пользователя"})
+		return
+	}
+
+	var userCount int64
+	db.Model(&User{}).Count(&userCount)
+	if userCount == 1 {
 		user.IsAdmin = true
 		db.Save(&user)
 	}
 
-	token, err := generateToken(user.ID, user.Username)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка генерации токена"})
+	if err := sendVerificationEmail(user.Email, user.Username, verifyToken); err != nil {
+		fmt.Printf("❌ Ошибка отправки письма: %v\n", err)
+		c.JSON(http.StatusCreated, gin.H{"message": "Пользователь создан, но письмо не отправлено. Свяжитесь с администратором."})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"token": token,
-		"user":  gin.H{"id": user.ID, "username": user.Username, "avatar": user.Avatar, "is_admin": user.IsAdmin},
-	})
+	c.JSON(http.StatusCreated, gin.H{"message": "Регистрация успешна! Проверьте почту для подтверждения."})
 }
 
 func loginHandler(c *gin.Context) {
 	var input struct {
-		Username string `json:"username" binding:"required"`
+		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Введите имя и пароль"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Введите email и пароль"})
 		return
 	}
 
 	var user User
-	if result := db.Where("username = ?", input.Username).First(&user); result.Error != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверное имя или пароль"})
+	if result := db.Where("email = ?", input.Email).First(&user); result.Error != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверный email или пароль"})
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверное имя или пароль"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверный email или пароль"})
 		return
 	}
 
 	if user.IsBanned {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Ваш аккаунт заблокирован администратором"})
+		return
+	}
+
+	if !user.IsVerified {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Email не подтвержден. Проверьте почту."})
 		return
 	}
 
@@ -392,8 +458,45 @@ func loginHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
-		"user":  gin.H{"id": user.ID, "username": user.Username, "avatar": user.Avatar, "is_admin": user.IsAdmin},
+		"user":  gin.H{"id": user.ID, "username": user.Username, "email": user.Email, "avatar": user.Avatar, "is_admin": user.IsAdmin},
 	})
+}
+
+func verifyEmailHandler(c *gin.Context) {
+	token := c.Query("token")
+	email := c.Query("email")
+
+	if token == "" || email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверная ссылка для подтверждения"})
+		return
+	}
+
+	var user User
+	if result := db.Where("email = ?", email).First(&user); result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Пользователь не найден"})
+		return
+	}
+
+	if user.IsVerified {
+		c.JSON(http.StatusOK, gin.H{"message": "Email уже подтвержден"})
+		return
+	}
+
+	if user.VerifyToken != token || time.Now().After(user.VerifyExpiresAt) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Токен недействителен или истек"})
+		return
+	}
+
+	user.IsVerified = true
+	user.VerifyToken = ""
+	user.VerifyExpiresAt = time.Time{}
+	db.Save(&user)
+
+	appURL := os.Getenv("APP_URL")
+	if appURL == "" {
+		appURL = "https://morionn.ru"
+	}
+	c.Redirect(http.StatusFound, appURL+"/?verified=true")
 }
 
 func meHandler(c *gin.Context) {
@@ -404,10 +507,12 @@ func meHandler(c *gin.Context) {
 	db.First(&user, userID)
 
 	c.JSON(http.StatusOK, gin.H{
-		"id": userID, "username": username,
+		"id": userID, "username": username, "email": user.Email,
 		"is_admin": user.IsAdmin, "is_banned": user.IsBanned,
 	})
 }
+
+// ===== Хендлеры: посты =====
 
 func searchHandler(c *gin.Context) {
 	query := strings.TrimSpace(c.Query("q"))
