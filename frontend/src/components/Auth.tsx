@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
-const API_URL = 'https://my-social-network-78kr.onrender.com/api'
+const API_URL = 'https://api.morionn.ru/api'
 
 type AuthProps = {
   onLogin: (token: string, username: string) => void

@@ -1,55 +1,65 @@
 :root {
-  --bg-body: #ffffff;
-  --bg-card: #f9f9f9;
-  --bg-card-edit: #fff8e1;
-  --bg-input: #ffffff;
+  --bg-body: #f5f6f8;
+  --bg-card: #ffffff;
+  --bg-card-edit: #f0f2f5;
+  --bg-input: #eef0f3;
   --bg-panel: #ffffff;
-  --bg-hover: #f0f0f0;
-  --bg-reply: #ffffff;
-  --bg-secondary: #eeeeee;
+  --bg-hover: #e8ebef;
+  --bg-reply: #fafbfc;
+  --bg-secondary: #eef0f3;
 
-  --text-primary: #1a1a1a;
-  --text-secondary: #555555;
-  --text-muted: #888888;
-  --text-light: #aaaaaa;
+  --text-primary: #1a1c1f;
+  --text-secondary: #5a5f68;
+  --text-muted: #8a909a;
+  --text-light: #b0b6c0;
   --text-on-accent: #ffffff;
 
-  --border: #dddddd;
-  --border-light: #eeeeee;
-  --border-input: #cccccc;
-  --border-strong: #bbbbbb;
+  --border: #e2e5ea;
+  --border-light: #eef0f3;
+  --border-input: #d8dce2;
+  --border-strong: #c8ccd4;
 
-  --accent: #007bff;
-  --accent-hover: #0069d9;
-  --success: #28a745;
-  --danger: #dc3545;
-  --like: #e0245e;
+  --accent: #5a6b7d;
+  --accent-hover: #4a5a6b;
+  --accent-soft: rgba(90, 107, 125, 0.12);
+  --success: #5c8a6e;
+  --danger: #a85c5c;
+  --like: #5a6b7d;
 
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow: 0 2px 8px rgba(26, 28, 31, 0.06);
+  --glow: 0 0 12px rgba(90, 107, 125, 0.45);
 }
 
 .dark {
-  --bg-body: #18191a;
-  --bg-card: #242526;
-  --bg-card-edit: #3a3520;
-  --bg-input: #3a3b3c;
-  --bg-panel: #242526;
-  --bg-hover: #3a3b3c;
-  --bg-reply: #2e2f30;
-  --bg-secondary: #3a3b3c;
+  --bg-body: #16181c;
+  --bg-card: #1e2025;
+  --bg-card-edit: #22252b;
+  --bg-input: #252830;
+  --bg-panel: #1e2025;
+  --bg-hover: #2a2e36;
+  --bg-reply: #1a1c20;
+  --bg-secondary: #252830;
 
-  --text-primary: #e4e6eb;
-  --text-secondary: #b0b3b8;
-  --text-muted: #8a8d91;
-  --text-light: #6b6e72;
+  --text-primary: #e0e2e6;
+  --text-secondary: #9aa0a8;
+  --text-muted: #6a7078;
+  --text-light: #4a5058;
   --text-on-accent: #ffffff;
 
-  --border: #3e4042;
-  --border-light: #3a3b3c;
-  --border-input: #4e4f50;
-  --border-strong: #5a5b5c;
+  --border: #2a2e36;
+  --border-light: #22252b;
+  --border-input: #353a44;
+  --border-strong: #444a54;
 
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --accent: #7a8fa3;
+  --accent-hover: #8a9fb3;
+  --accent-soft: rgba(122, 143, 163, 0.16);
+  --success: #6e9a7e;
+  --danger: #b86c6c;
+  --like: #7a8fa3;
+
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --glow: 0 0 14px rgba(122, 143, 163, 0.5);
 }
 
 * {
@@ -62,7 +72,8 @@ html, body {
   background: var(--bg-body);
   color: var(--text-primary);
   transition: background 0.2s ease, color 0.2s ease;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
@@ -81,9 +92,94 @@ input::placeholder, textarea::placeholder {
   opacity: 1;
 }
 
-/* Скрыть стрелки в input[type=number] (если понадобится) */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.has-bottom-nav {
+  padding-bottom: 96px !important;
+}
+
+/* Логотип MORION */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.brand-name {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.28em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+@media (max-width: 640px) {
+  .brand-name { font-size: 15px; letter-spacing: 0.22em; }
+}
+
+/* Лайк со свечением */
+.like-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.3s ease, transform 0.15s ease;
+}
+.like-btn:hover {
+  background: var(--bg-hover);
+}
+.like-btn:active {
+  transform: scale(0.92);
+}
+.like-btn.liked {
+  color: var(--like);
+  box-shadow: var(--glow);
+}
+.like-btn.liked svg {
+  filter: drop-shadow(0 0 4px var(--like));
+}
+@keyframes likePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.like-btn.liked.just-liked {
+  animation: likePop 0.35s ease-out;
+}
+
+/* Футер */
+.app-footer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-light);
+  opacity: 0.45;
+  padding: 6px 0 0 0;
+  letter-spacing: 0.08em;
+  user-select: none;
+  font-weight: 500;
 }
