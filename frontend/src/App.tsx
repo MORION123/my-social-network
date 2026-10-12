@@ -4,6 +4,12 @@ import type { ReactNode } from 'react'
 import { Virtuoso } from 'react-virtuoso'
 import './App.css'
 import Auth from './components/Auth'
+import {
+  IconHeart, IconHeartFilled, IconComment, IconRepost, IconBookmark, IconBookmarkFilled,
+  IconHome, IconMessage, IconUser, IconBell, IconMenu, IconFolder, IconTrash,
+  IconSettings, IconChart, IconMoon, IconSun, IconLogout, IconFlag, IconEdit,
+  IconX, IconCamera, IconPlus, IconSearch, IconArrowLeft, IconRestore, IconSend,
+} from './Icons'
 
 const GLOBAL_STYLES = `
 @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
@@ -162,7 +168,7 @@ function renderTextWithHashtags(text: string, onHashtagClick: (tag: string) => v
   while ((match = regex.exec(text)) !== null) {
     if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index))
     const tag = match[1]
-    parts.push(<span key={key++} onClick={(e) => { e.stopPropagation(); onHashtagClick(tag.toLowerCase()) }} style={{ color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>#{tag}</span>)
+    parts.push(<span key={key++} onClick={(e) => { e.stopPropagation(); onHashtagClick(tag.toLowerCase()) }} style={{ color: 'var(--accent)', cursor: 'pointer', fontWeight: 600 }}>#{tag}</span>)
     lastIndex = regex.lastIndex
   }
   if (lastIndex < text.length) parts.push(text.slice(lastIndex))
@@ -235,7 +241,7 @@ function BarChart({ data, color, label }: { data: DailyStat[]; color: string; la
       const y = padTop + (chartH / 4) * i
       ctx.beginPath(); ctx.moveTo(padLeft, y); ctx.lineTo(W - padRight, y); ctx.stroke()
     }
-    ctx.fillStyle = 'rgba(128,128,128,0.8)'; ctx.font = '10px -apple-system, sans-serif'; ctx.textAlign = 'right'
+    ctx.fillStyle = 'rgba(128,128,128,0.8)'; ctx.font = '10px Manrope, sans-serif'; ctx.textAlign = 'right'
     ctx.fillText(String(max), padLeft - 4, padTop + 4)
     data.forEach((d, i) => {
       const barH = (d.count / max) * chartH
@@ -249,7 +255,7 @@ function BarChart({ data, color, label }: { data: DailyStat[]; color: string; la
         ctx.lineTo(x + bw, padTop + chartH); ctx.lineTo(x, padTop + chartH); ctx.closePath(); ctx.fill()
       }
     })
-    ctx.fillStyle = 'rgba(128,128,128,0.9)'; ctx.font = '9px -apple-system, sans-serif'; ctx.textAlign = 'center'
+    ctx.fillStyle = 'rgba(128,128,128,0.9)'; ctx.font = '9px Manrope, sans-serif'; ctx.textAlign = 'center'
     const labelIndices = data.length <= 7 ? data.map((_, i) => i) : [0, Math.floor(data.length / 2), data.length - 1]
     labelIndices.forEach(i => {
       const d = data[i]; if (!d) return
@@ -301,8 +307,8 @@ function CommentItem({ node, depth, currentUsername, replyToId, replyText, onAut
           <strong onClick={() => onAuthorClick(comment.author)} style={{ fontSize: 13, color: 'var(--accent)', cursor: 'pointer' }}>{comment.author}</strong>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <small style={{ color: 'var(--text-light)', fontSize: 11 }}>{new Date(comment.created_at).toLocaleString('ru-RU')}</small>
-            {canDelete && <button onClick={() => onDelete(comment.id)} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, padding: '0 2px', color: 'var(--danger)', lineHeight: 1 }}>🗑️</button>}
-            {canReport && <button onClick={() => onReport(comment.id)} title="Пожаловаться" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, padding: '0 2px', color: 'var(--text-muted)', lineHeight: 1 }}>🚩</button>}
+            {canDelete && <button onClick={() => onDelete(comment.id)} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', color: 'var(--danger)', lineHeight: 1, display: 'flex' }}><IconTrash size={14} /></button>}
+            {canReport && <button onClick={() => onReport(comment.id)} title="Пожаловаться" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', color: 'var(--text-muted)', lineHeight: 1, display: 'flex' }}><IconFlag size={14} /></button>}
           </div>
         </div>
         <div style={{ fontSize: 14, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: 'var(--text-primary)' }}>{renderTextWithHashtags(comment.text, onHashtagClick)}</div>
@@ -313,7 +319,7 @@ function CommentItem({ node, depth, currentUsername, replyToId, replyText, onAut
           <input type="text" placeholder={`Ответить ${comment.author}...`} value={replyText} onChange={e => onReplyChange(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onSendReply(comment.id) } if (e.key === 'Escape') onCancelReply() }}
             autoFocus style={{ flex: 1, padding: 6, fontSize: 13, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, boxSizing: 'border-box', minWidth: 0 }} />
-          <button onClick={() => onSendReply(comment.id)} disabled={!replyText.trim()} style={{ padding: '6px 12px', fontSize: 13, background: replyText.trim() ? 'var(--accent)' : 'var(--text-light)', color: '#fff', border: 'none', borderRadius: 4, cursor: replyText.trim() ? 'pointer' : 'not-allowed' }}>→</button>
+          <button onClick={() => onSendReply(comment.id)} disabled={!replyText.trim()} style={{ padding: '6px 12px', background: replyText.trim() ? 'var(--accent)' : 'var(--text-light)', color: '#fff', border: 'none', borderRadius: 4, cursor: replyText.trim() ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center' }}><IconSend size={14} /></button>
         </div>
       )}
       {replies.map(r => <CommentItem key={r.comment.id} node={r} depth={depth + 1} currentUsername={currentUsername} replyToId={replyToId} replyText={replyText} onAuthorClick={onAuthorClick} onHashtagClick={onHashtagClick} onStartReply={onStartReply} onCancelReply={onCancelReply} onReplyChange={onReplyChange} onSendReply={onSendReply} onDelete={onDelete} onReport={onReport} />)}
@@ -345,8 +351,8 @@ function PostCard({ post, currentUsername, expandedPostId, commentTexts, replyTo
   const commentTree = buildCommentTree(post.comments)
   return (
     <div className="post-card-enter" style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 16, background: isEditing ? 'var(--bg-card-edit)' : 'var(--bg-card)', opacity: inTrash ? 0.75 : 1 }}>
-      {post.is_hidden && <div style={{ fontSize: 12, color: 'var(--danger)', marginBottom: 8, padding: '4px 8px', background: 'rgba(184,92,92,0.1)', borderRadius: 4, display: 'inline-block' }}>🚫 Скрыто модератором</div>}
-      {isRepost && <div style={{ fontSize: 12, color: 'var(--success)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>🔄 Репост от <strong>{post.repost_of_author}</strong></div>}
+      {post.is_hidden && <div style={{ fontSize: 12, color: 'var(--danger)', marginBottom: 8, padding: '4px 8px', background: 'var(--accent-soft)', borderRadius: 4, display: 'inline-block' }}>🚫 Скрыто модератором</div>}
+      {isRepost && <div style={{ fontSize: 12, color: 'var(--accent)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}><IconRepost size={14} /> Репост от <strong>{post.repost_of_author}</strong></div>}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           <div onClick={() => onAuthorClick(post.author)} style={{ cursor: 'pointer' }}><Avatar url={post.author_avatar} username={post.author} size={36} /></div>
@@ -356,14 +362,14 @@ function PostCard({ post, currentUsername, expandedPostId, commentTexts, replyTo
           <small style={{ color: 'var(--text-muted)', fontSize: 12 }}>{new Date(post.created_at).toLocaleString('ru-RU')}{post.is_edited && <span style={{ color: 'var(--text-light)' }}> (изм.)</span>}</small>
           {inTrash ? (
             <>
-              <button onClick={() => onRestore?.(post.id)} title="Восстановить" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '2px 6px', color: 'var(--success)', lineHeight: 1 }}>↩️</button>
-              <button onClick={() => onPermanentDelete?.(post.id)} title="Удалить навсегда" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '2px 6px', color: 'var(--danger)', lineHeight: 1 }}>❌</button>
+              <button onClick={() => onRestore?.(post.id)} title="Восстановить" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', color: 'var(--success)', lineHeight: 1, display: 'flex' }}><IconRestore size={16} /></button>
+              <button onClick={() => onPermanentDelete?.(post.id)} title="Удалить навсегда" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', color: 'var(--danger)', lineHeight: 1, display: 'flex' }}><IconX size={16} /></button>
             </>
           ) : (
             <>
-              {post.can_edit && !isEditing && <button onClick={() => onStartEdit(post)} title="Редактировать" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '2px 6px', color: 'var(--accent)', lineHeight: 1 }}>✏️</button>}
-              {post.can_delete && !isEditing && <button onClick={() => onDelete(post.id)} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '2px 6px', color: 'var(--danger)', lineHeight: 1 }}>🗑️</button>}
-              {canReport && !isEditing && <button onClick={() => onReportPost?.(post.id)} title="Пожаловаться" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '2px 6px', color: 'var(--text-muted)', lineHeight: 1 }}>🚩</button>}
+              {post.can_edit && !isEditing && <button onClick={() => onStartEdit(post)} title="Редактировать" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', color: 'var(--accent)', lineHeight: 1, display: 'flex' }}><IconEdit size={16} /></button>}
+              {post.can_delete && !isEditing && <button onClick={() => onDelete(post.id)} title="Удалить" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', color: 'var(--danger)', lineHeight: 1, display: 'flex' }}><IconTrash size={16} /></button>}
+              {canReport && !isEditing && <button onClick={() => onReportPost?.(post.id)} title="Пожаловаться" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', color: 'var(--text-muted)', lineHeight: 1, display: 'flex' }}><IconFlag size={16} /></button>}
             </>
           )}
         </div>
@@ -380,12 +386,26 @@ function PostCard({ post, currentUsername, expandedPostId, commentTexts, replyTo
         <>
           <p style={{ margin: '0 0 12px 0', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: 'var(--text-primary)' }}>{renderTextWithHashtags(post.text, onHashtagClick)}</p>
           {post.image_url && <div style={{ marginBottom: 12 }}><LazyImage src={BACKEND_URL + post.image_url} alt="post" /></div>}
-          <div className="post-actions" style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <button onClick={() => onLike(post.id)} className={post.is_liked ? 'like-pop' : ''} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '4px 8px', color: post.is_liked ? 'var(--like)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>{post.is_liked ? '❤️' : '🤍'} {post.likes_count}</button>
-            <button onClick={() => onToggleComments(post.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '4px 8px', color: isExpanded ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>💬 {post.comments_count}</button>
-            {canRepost && <button onClick={() => onRepost(post.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '4px 8px', color: post.is_reposted ? 'var(--success)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>🔄 {post.reposts_count}</button>}
-            {!canRepost && post.reposts_count > 0 && <span style={{ fontSize: 16, padding: '4px 8px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>🔄 {post.reposts_count}</span>}
-            <button onClick={() => onBookmark(post.id)} title={post.is_bookmarked ? 'Убрать из сохранённых' : 'Сохранить'} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, padding: '4px 8px', color: post.is_bookmarked ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>{post.is_bookmarked ? '🔖' : '📑'}</button>
+          <div className="post-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <button onClick={() => onLike(post.id)} className={`like-btn${post.is_liked ? ' liked' : ''}`} title="Нравится">
+              {post.is_liked ? <IconHeartFilled size={20} /> : <IconHeart size={20} />}
+              <span style={{ fontSize: 14, fontWeight: 500 }}>{post.likes_count}</span>
+            </button>
+            <button onClick={() => onToggleComments(post.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px', color: isExpanded ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, borderRadius: 8 }}>
+              <IconComment size={20} />
+              <span style={{ fontSize: 14, fontWeight: 500 }}>{post.comments_count}</span>
+            </button>
+            {canRepost && <button onClick={() => onRepost(post.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px', color: post.is_reposted ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, borderRadius: 8 }}>
+              <IconRepost size={20} />
+              <span style={{ fontSize: 14, fontWeight: 500 }}>{post.reposts_count}</span>
+            </button>}
+            {!canRepost && post.reposts_count > 0 && <span style={{ padding: '6px 8px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <IconRepost size={20} />
+              <span style={{ fontSize: 14, fontWeight: 500 }}>{post.reposts_count}</span>
+            </span>}
+            <button onClick={() => onBookmark(post.id)} title={post.is_bookmarked ? 'Убрать из сохранённых' : 'Сохранить'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px', color: post.is_bookmarked ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto', borderRadius: 8 }}>
+              {post.is_bookmarked ? <IconBookmarkFilled size={20} /> : <IconBookmark size={20} />}
+            </button>
           </div>
           {isExpanded && !inTrash && (
             <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border-light)' }}>
@@ -393,7 +413,7 @@ function PostCard({ post, currentUsername, expandedPostId, commentTexts, replyTo
               {commentTree.map(node => <CommentItem key={node.comment.id} node={node} depth={0} currentUsername={currentUsername} replyToId={replyToId} replyText={replyText} onAuthorClick={onAuthorClick} onHashtagClick={onHashtagClick} onStartReply={onStartReply} onCancelReply={onCancelReply} onReplyChange={onReplyChange} onSendReply={(parentId: number) => onSendReply(post.id, parentId)} onDelete={onDeleteComment} onReport={(cid) => onReportComment?.(cid)} />)}
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <input type="text" placeholder="Написать комментарий..." value={commentTexts[post.id] || ''} onChange={e => onCommentChange(post.id, e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onAddComment(post.id) } }} style={{ flex: 1, padding: 8, fontSize: 14, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, boxSizing: 'border-box', minWidth: 0 }} />
-                <button onClick={() => onAddComment(post.id)} disabled={!commentTexts[post.id]?.trim()} style={{ padding: '8px 14px', fontSize: 14, background: commentTexts[post.id]?.trim() ? 'var(--accent)' : 'var(--text-light)', color: '#fff', border: 'none', borderRadius: 4, cursor: commentTexts[post.id]?.trim() ? 'pointer' : 'not-allowed' }}>Отправить</button>
+                <button onClick={() => onAddComment(post.id)} disabled={!commentTexts[post.id]?.trim()} style={{ padding: '8px 14px', background: commentTexts[post.id]?.trim() ? 'var(--accent)' : 'var(--text-light)', color: '#fff', border: 'none', borderRadius: 4, cursor: commentTexts[post.id]?.trim() ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center' }}><IconSend size={16} /></button>
               </div>
             </div>
           )}
@@ -432,7 +452,7 @@ function ChatMessage({ msg, mine, isEditing, editingText, showReactionPicker, on
             </>
           ) : (
             <>
-              <div style={{ fontSize: 14 }}>{msg.is_deleted ? '🚫 Сообщение удалено' : msg.text}</div>
+              <div style={{ fontSize: 14 }}>{msg.is_deleted ? 'Сообщение удалено' : msg.text}</div>
               <div style={{ fontSize: 10, opacity: 0.75, marginTop: 4, textAlign: 'right' }}>
                 {new Date(msg.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                 {msg.edited_at && msg.edited_at !== '0001-01-01T00:00:00Z' && <span> (изм.)</span>}
@@ -451,8 +471,8 @@ function ChatMessage({ msg, mine, isEditing, editingText, showReactionPicker, on
           })}
           {mine && (
             <>
-              <button onClick={onEditStart} title="Редактировать" style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 16, padding: '2px 6px', color: 'var(--accent)', lineHeight: 1 }}>✏️</button>
-              <button onClick={onDelete} title="Удалить" style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 16, padding: '2px 6px', color: 'var(--danger)', lineHeight: 1 }}>🗑️</button>
+              <button onClick={onEditStart} title="Редактировать" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 6px', color: 'var(--accent)', lineHeight: 1, display: 'flex' }}><IconEdit size={16} /></button>
+              <button onClick={onDelete} title="Удалить" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 6px', color: 'var(--danger)', lineHeight: 1, display: 'flex' }}><IconTrash size={16} /></button>
             </>
           )}
         </div>
@@ -476,9 +496,9 @@ function NotificationBell({ unreadCount, notifications, isOpen, onToggle, onMark
   }, [isOpen, onToggle])
   return (
     <div ref={panelRef} style={{ position: 'relative', display: 'inline-block' }}>
-      <button onClick={onToggle} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px 8px', position: 'relative', lineHeight: 1, color: 'var(--text-primary)' }}>
-        🔔
-        {unreadCount > 0 && <span style={{ position: 'absolute', top: 0, right: 2, background: 'var(--danger)', color: '#fff', fontSize: 10, fontWeight: 'bold', borderRadius: '50%', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{unreadCount > 99 ? '99+' : unreadCount}</span>}
+      <button onClick={onToggle} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px', position: 'relative', lineHeight: 1, color: 'var(--text-primary)', display: 'flex', borderRadius: 8 }}>
+        <IconBell size={22} />
+        {unreadCount > 0 && <span style={{ position: 'absolute', top: 0, right: 0, background: 'var(--danger)', color: '#fff', fontSize: 10, fontWeight: 'bold', borderRadius: '50%', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{unreadCount > 99 ? '99+' : unreadCount}</span>}
       </button>
       {isOpen && (
         <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, width: 'min(340px, calc(100vw - 24px))', maxHeight: 480, overflowY: 'auto', background: 'var(--bg-panel)', border: '1px solid var(--border)', borderRadius: 8, boxShadow: 'var(--shadow)', zIndex: 100 }}>
@@ -514,7 +534,7 @@ function TrendingBlock({ trending, onHashtagClick }: { trending: TrendingHashtag
   if (trending.length === 0) return null
   return (
     <div className="trending-block" style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 12, marginBottom: 16, background: 'var(--bg-card)' }}>
-      <div style={{ fontSize: 13, fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>🔥 Топ хэштегов</div>
+      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Топ хэштегов</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
         {trending.map(t => <button key={t.tag} onClick={() => onHashtagClick(t.tag)} style={{ padding: '4px 10px', fontSize: 13, background: 'var(--bg-input)', color: 'var(--accent)', border: '1px solid var(--border)', borderRadius: 12, cursor: 'pointer' }}>#{t.tag} <span style={{ color: 'var(--text-light)' }}>{t.count}</span></button>)}
       </div>
@@ -540,7 +560,7 @@ function ReportModal({ targetType, onClose, onSubmit }: ReportModalProps) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }} onClick={onClose}>
       <div className="modal-box" style={{ background: 'var(--bg-panel)', borderRadius: 12, padding: 24, maxWidth: 420, width: '100%', border: '1px solid var(--border)' }} onClick={e => e.stopPropagation()}>
-        <h3 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)' }}>🚩 Жалоба на {typeLabel}</h3>
+        <h3 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)' }}>Жалоба на {typeLabel}</h3>
         <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '0 0 16px 0' }}>Помогите нам сделать сообщество безопаснее.</p>
         <label style={{ display: 'block', fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>Причина</label>
         <select value={reason} onChange={e => setReason(e.target.value)} style={{ width: '100%', padding: 10, marginBottom: 12, fontSize: 14, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, boxSizing: 'border-box' }}>{REPORT_REASONS.map(r => <option key={r} value={r}>{r}</option>)}</select>
@@ -570,15 +590,15 @@ function CreateGroupModal({ onClose, onCreate }: { onClose: () => void; onCreate
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }} onClick={onClose}>
       <div className="modal-box" style={{ background: 'var(--bg-panel)', borderRadius: 12, padding: 24, maxWidth: 460, width: '100%', border: '1px solid var(--border)', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-        <h3 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)' }}>✨ Создать группу</h3>
+        <h3 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)' }}>Создать группу</h3>
         <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '0 0 16px 0' }}>Объединяйте людей по интересам</p>
         <label style={{ display: 'block', fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>Обложка</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>{GROUP_EMOJIS.map(e => <button key={e} onClick={() => setEmoji(e)} style={{ width: 42, height: 42, fontSize: 20, cursor: 'pointer', background: emoji === e ? 'var(--accent)' : 'var(--bg-secondary)', border: emoji === e ? '2px solid var(--accent)' : '1px solid var(--border)', borderRadius: 8 }}>{e}</button>)}</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>{GROUP_EMOJIS.map(e => <button key={e} onClick={() => setEmoji(e)} style={{ width: 42, height: 42, fontSize: 20, cursor: 'pointer', background: emoji === e ? 'var(--accent-soft)' : 'var(--bg-secondary)', border: emoji === e ? '2px solid var(--accent)' : '1px solid var(--border)', borderRadius: 8 }}>{e}</button>)}</div>
         <label style={{ display: 'block', fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>Название *</label>
         <input type="text" value={name} onChange={e => setName(e.target.value)} maxLength={60} placeholder="Например: Любители Go" disabled={sending} style={{ width: '100%', padding: 10, marginBottom: 12, fontSize: 14, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, boxSizing: 'border-box' }} />
         <label style={{ display: 'block', fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>Описание</label>
         <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} maxLength={300} disabled={sending} placeholder="О чём эта группа?" style={{ width: '100%', padding: 10, marginBottom: 12, fontSize: 14, fontFamily: 'inherit', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box' }} />
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><input type="checkbox" checked={isPrivate} onChange={e => setIsPrivate(e.target.checked)} />🔒 Приватная группа (только по приглашению)</label>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><input type="checkbox" checked={isPrivate} onChange={e => setIsPrivate(e.target.checked)} />Приватная группа (только по приглашению)</label>
         {error && <div style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 12 }}>{error}</div>}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button onClick={onClose} disabled={sending} style={{ padding: '8px 16px', fontSize: 14, background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 4, cursor: sending ? 'not-allowed' : 'pointer' }}>Отмена</button>
@@ -1426,16 +1446,16 @@ function App() {
       padding: '8px 0', zIndex: 400,
       paddingBottom: 'max(8px, env(safe-area-inset-bottom))'
     }}>
-      <button onClick={handleBackToFeed} title="Лента" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, padding: '6px 16px', color: viewMode === 'feed' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-        🏠<span style={{ fontSize: 10 }}>Лента</span>
+      <button onClick={handleBackToFeed} title="Лента" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', color: viewMode === 'feed' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        <IconHome size={22} /><span style={{ fontSize: 10 }}>Лента</span>
       </button>
-      <button onClick={handleOpenMessages} title="Сообщения" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, padding: '6px 16px', position: 'relative', color: viewMode === 'messages' || viewMode === 'dialog' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-        ✉️
+      <button onClick={handleOpenMessages} title="Сообщения" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', position: 'relative', color: viewMode === 'messages' || viewMode === 'dialog' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        <IconMessage size={22} />
         {unreadMessages > 0 && <span style={{ position: 'absolute', top: 0, right: 8, background: 'var(--danger)', color: '#fff', fontSize: 10, fontWeight: 'bold', borderRadius: '50%', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{unreadMessages > 99 ? '99+' : unreadMessages}</span>}
         <span style={{ fontSize: 10 }}>Сообщения</span>
       </button>
-      <button onClick={() => handleAuthorClick(username)} title="Профиль" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, padding: '6px 16px', color: viewMode === 'profile' && viewingUser === username ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-        👤<span style={{ fontSize: 10 }}>Профиль</span>
+      <button onClick={() => handleAuthorClick(username)} title="Профиль" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 16px', color: viewMode === 'profile' && viewingUser === username ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        <IconUser size={22} /><span style={{ fontSize: 10 }}>Профиль</span>
       </button>
     </div>
   )
@@ -1443,69 +1463,75 @@ function App() {
   const Header = ({ backButton = false, backLabel = '← Назад', customBack }: { backButton?: boolean; backLabel?: string; customBack?: () => void }) => (
     <div className="app-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 8, position: 'relative' }}>
       {backButton ? (
-        <button onClick={customBack || handleBackToFeed} style={{ padding: '6px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', fontSize: 13, flexShrink: 0 }}>{backLabel}</button>
+        <button onClick={customBack || handleBackToFeed} style={{ padding: '6px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', fontSize: 13, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <IconArrowLeft size={14} /> {backLabel.replace('← ', '')}
+        </button>
       ) : (
-        <div ref={menuRef} style={{ position: 'relative' }}>
-          <button onClick={() => setShowMenu(v => !v)} title="Меню" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, padding: '4px 8px', lineHeight: 1, color: 'var(--text-primary)' }}>☰</button>
-          {showMenu && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 8, minWidth: 200, background: 'var(--bg-panel)', border: '1px solid var(--border)', borderRadius: 8, boxShadow: 'var(--shadow)', zIndex: 200, overflow: 'hidden' }}>
-              <button onClick={() => { setShowMenu(false); handleAuthorClick(username) }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>👤 Профиль</button>
-              <button onClick={() => { setShowMenu(false); handleOpenGroups() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>📁 Группы</button>
-              <button onClick={() => { setShowMenu(false); handleOpenBookmarks() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>🔖 Сохранённые</button>
-              <button onClick={() => { setShowMenu(false); handleOpenTrash() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>🗑️ Корзина</button>
-              {isAdmin && (
-                <>
-                  <button onClick={() => { setShowMenu(false); handleOpenModeration() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>⚙️ Модерация {pendingReports > 0 && `(${pendingReports})`}</button>
-                  <button onClick={() => { setShowMenu(false); handleOpenAnalytics() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>📊 Аналитика</button>
-                </>
-              )}
-              <button onClick={() => { toggleTheme(); setShowMenu(false) }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>{theme === 'dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема'}</button>
-              <button onClick={() => { setShowMenu(false); handleLogout() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--danger)' }}>🚪 Выйти</button>
-            </div>
-          )}
+        <div className="brand" onClick={handleBackToFeed}>
+          <img src="/LOGO_M.png" alt="MORION" className="brand-logo" />
         </div>
       )}
-      <h1 onClick={() => handleAuthorClick(username)} style={{ cursor: 'pointer', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2, fontSize: 18, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>Моя соцсеть</h1>
       <div className="app-header-buttons" style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 4 }}>
         <NotificationBell unreadCount={unreadCount} notifications={notifications} isOpen={showNotifs} onToggle={handleToggleNotifs} onMarkAllRead={handleMarkAllRead} onNotificationClick={handleNotifClick} />
+        {!backButton && (
+          <div ref={menuRef} style={{ position: 'relative' }}>
+            <button onClick={() => setShowMenu(v => !v)} title="Меню" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px', lineHeight: 1, color: 'var(--text-primary)', display: 'flex', borderRadius: 8 }}><IconMenu size={22} /></button>
+            {showMenu && (
+              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, minWidth: 220, background: 'var(--bg-panel)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: 'var(--shadow)', zIndex: 200, overflow: 'hidden' }}>
+                <button onClick={() => { setShowMenu(false); handleAuthorClick(username) }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconUser size={16} /> Профиль</button>
+                <button onClick={() => { setShowMenu(false); handleOpenGroups() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconFolder size={16} /> Группы</button>
+                <button onClick={() => { setShowMenu(false); handleOpenBookmarks() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconBookmark size={16} /> Сохранённые</button>
+                <button onClick={() => { setShowMenu(false); handleOpenTrash() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconTrash size={16} /> Корзина</button>
+                {isAdmin && (
+                  <>
+                    <button onClick={() => { setShowMenu(false); handleOpenModeration() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconSettings size={16} /> Модерация {pendingReports > 0 && `(${pendingReports})`}</button>
+                    <button onClick={() => { setShowMenu(false); handleOpenAnalytics() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconChart size={16} /> Аналитика</button>
+                  </>
+                )}
+                <button onClick={() => { toggleTheme(); setShowMenu(false) }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>{theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />} {theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</button>
+                <button onClick={() => { setShowMenu(false); handleLogout() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--danger)' }}><IconLogout size={16} /> Выйти</button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
 
   if (viewMode === 'analytics' && isAdmin) {
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 700, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 700, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← К ленте" />
-        <h2 style={{ color: 'var(--text-primary)' }}>📊 Аналитика</h2>
+        <h2 style={{ color: 'var(--text-primary)' }}>Аналитика</h2>
         {analyticsLoading && <FeedSkeleton />}
         {!analyticsLoading && totalStats && (
           <div className="analytics-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 20 }}>
-            <StatCard label="👥 Пользователей" value={totalStats.users_count} color="var(--accent)" />
-            <StatCard label="📝 Постов" value={totalStats.posts_count} color="var(--success)" />
-            <StatCard label="📁 Групп" value={totalStats.groups_count} color="#8b5cf6" />
-            <StatCard label="🚩 Жалоб" value={totalStats.pending_reports} color="var(--danger)" />
-            <StatCard label="🚫 Забанено" value={totalStats.banned_users} color="#7c2d12" />
+            <StatCard label="Пользователей" value={totalStats.users_count} color="var(--accent)" />
+            <StatCard label="Постов" value={totalStats.posts_count} color="var(--success)" />
+            <StatCard label="Групп" value={totalStats.groups_count} color="var(--accent)" />
+            <StatCard label="Жалоб" value={totalStats.pending_reports} color="var(--danger)" />
+            <StatCard label="Забанено" value={totalStats.banned_users} color="var(--danger)" />
           </div>
         )}
         {!analyticsLoading && dailyStats && (
           <>
-            <h3 style={{ color: 'var(--text-primary)', marginTop: 20 }}>📈 Активность за 14 дней</h3>
-            <BarChart data={dailyStats.posts} color="#5c9e6e" label="📝 Посты в день" />
-            <BarChart data={dailyStats.users} color="#4a6fa5" label="👥 Новые пользователи" />
-            <BarChart data={dailyStats.comments} color="#8b5cf6" label="💬 Комментарии" />
+            <h3 style={{ color: 'var(--text-primary)', marginTop: 20 }}>Активность за 14 дней</h3>
+            <BarChart data={dailyStats.posts} color="#5c8a6e" label="Посты в день" />
+            <BarChart data={dailyStats.users} color="#5a6b7d" label="Новые пользователи" />
+            <BarChart data={dailyStats.comments} color="#7a8fa3" label="Комментарии" />
           </>
         )}
         {!analyticsLoading && topAuthors.length > 0 && (
           <>
-            <h3 style={{ color: 'var(--text-primary)', marginTop: 20 }}>🏆 Топ-10 авторов</h3>
+            <h3 style={{ color: 'var(--text-primary)', marginTop: 20 }}>Топ-10 авторов</h3>
             {topAuthors.map((a, idx) => (
               <div key={a.author} onClick={() => handleAuthorClick(a.author)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, marginBottom: 6, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, cursor: 'pointer' }}>
                 <div style={{ width: 30, height: 30, borderRadius: '50%', background: idx < 3 ? 'var(--accent)' : 'var(--bg-secondary)', color: idx < 3 ? '#fff' : 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 14, flexShrink: 0 }}>{idx + 1}</div>
                 <Avatar url={a.avatar} username={a.author} size={36} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <strong style={{ color: 'var(--accent)' }}>{a.author}</strong>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>📝 {a.posts_count} · ❤️ {a.likes_count}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Постов: {a.posts_count} · Лайков: {a.likes_count}</div>
                 </div>
               </div>
             ))}
@@ -1518,7 +1544,7 @@ function App() {
   if (viewMode === 'group' && viewingGroup !== null) {
     const g = viewingGroup
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← К группам" customBack={handleOpenGroups} />
         {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
@@ -1526,30 +1552,30 @@ function App() {
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 12 }}>
             <GroupIcon emoji={g.cover_emoji} name={g.name} size={72} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <h1 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)', wordBreak: 'break-word' }}>{g.name} {g.is_private && '🔒'}</h1>
+              <h1 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)', wordBreak: 'break-word' }}>{g.name} {g.is_private && '· приватная'}</h1>
               <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
                 Создатель: <strong style={{ color: 'var(--accent)', cursor: 'pointer' }} onClick={() => handleAuthorClick(g.creator_name)}>{g.creator_name}</strong>
                 {' · '}
-                <button onClick={handleToggleGroupMembers} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', padding: 0, fontSize: 13 }}>👥 {g.members_count} участников</button>
+                <button onClick={handleToggleGroupMembers} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', padding: 0, fontSize: 13 }}>{g.members_count} участников</button>
               </div>
             </div>
           </div>
           {g.description && <p style={{ color: 'var(--text-secondary)', margin: '0 0 12px 0', fontSize: 14, whiteSpace: 'pre-wrap' }}>{g.description}</p>}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {!g.is_member ? (
-              <button onClick={() => handleJoinGroup(g.id)} style={{ padding: '8px 18px', fontSize: 14, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>➕ Вступить</button>
+              <button onClick={() => handleJoinGroup(g.id)} style={{ padding: '8px 18px', fontSize: 14, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Вступить</button>
             ) : (
               <>
-                {!g.is_owner && <button onClick={() => handleLeaveGroup(g.id)} style={{ padding: '8px 18px', fontSize: 14, background: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer' }}>🚪 Покинуть</button>}
+                {!g.is_owner && <button onClick={() => handleLeaveGroup(g.id)} style={{ padding: '8px 18px', fontSize: 14, background: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>Покинуть</button>}
                 {g.is_owner && (
                   <>
-                    <span style={{ padding: '8px 12px', fontSize: 13, background: 'var(--bg-secondary)', color: 'var(--text-secondary)', borderRadius: 4 }}>👑 Вы владелец</span>
-                    <button onClick={() => handleDeleteGroup(g.id)} style={{ padding: '8px 18px', fontSize: 14, background: 'transparent', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 4, cursor: 'pointer' }}>🗑️ Удалить</button>
+                    <span style={{ padding: '8px 12px', fontSize: 13, background: 'var(--bg-secondary)', color: 'var(--text-secondary)', borderRadius: 6 }}>Вы владелец</span>
+                    <button onClick={() => handleDeleteGroup(g.id)} style={{ padding: '8px 18px', fontSize: 14, background: 'transparent', color: 'var(--danger)', border: '1px solid var(--danger)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}><IconTrash size={14} /> Удалить</button>
                   </>
                 )}
               </>
             )}
-            {!g.is_owner && <button onClick={() => setReportModal({ type: 'group', id: g.id })} style={{ padding: '8px 14px', fontSize: 14, background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer' }}>🚩 Пожаловаться</button>}
+            {!g.is_owner && <button onClick={() => setReportModal({ type: 'group', id: g.id })} style={{ padding: '8px 14px', fontSize: 14, background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}><IconFlag size={14} /> Пожаловаться</button>}
           </div>
         </div>
         {showGroupMembers && (
@@ -1559,14 +1585,14 @@ function App() {
               {groupMembers.map(m => (
                 <div key={m.user_id} onClick={() => handleAuthorClick(m.username)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 6, cursor: 'pointer', borderRadius: 6 }}>
                   <Avatar url={m.avatar} username={m.username} size={32} />
-                  <span style={{ color: 'var(--text-primary)' }}>{m.username} {m.is_owner && '👑'}</span>
+                  <span style={{ color: 'var(--text-primary)' }}>{m.username} {m.is_owner && '· владелец'}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
         {g.can_view_content === false ? (
-          <div style={{ padding: 30, textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border)', borderRadius: 8 }}>🔒 Приватная группа. Вступите, чтобы видеть посты.</div>
+          <div style={{ padding: 30, textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border)', borderRadius: 8 }}>Приватная группа. Вступите, чтобы видеть посты.</div>
         ) : (
           <>
             {g.is_member && (
@@ -1576,20 +1602,20 @@ function App() {
                   {groupPostImagePreview && (
                     <div style={{ position: 'relative', marginBottom: 8 }}>
                       <img src={groupPostImagePreview} alt="preview" style={{ width: '100%', maxHeight: 300, objectFit: 'cover', borderRadius: 6, display: 'block' }} />
-                      <button type="button" onClick={() => handleGroupPostImageSelect(null)} style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', fontSize: 18, lineHeight: 1 }}>×</button>
+                      <button type="button" onClick={() => handleGroupPostImageSelect(null)} style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconX size={16} /></button>
                     </div>
                   )}
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                    <label style={{ padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}>
-                      📷 {groupPostImage ? 'Заменить' : 'Картинка'}
+                    <label style={{ padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderRadius: 6, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <IconCamera size={16} /> {groupPostImage ? 'Заменить' : 'Картинка'}
                       <input type="file" accept="image/*" onChange={e => handleGroupPostImageSelect(e.target.files?.[0] || null)} disabled={groupPostSending} style={{ display: 'none' }} />
                     </label>
-                    <button type="submit" disabled={groupPostSending || !groupPostText.trim()} style={{ flex: 1, minWidth: 120, padding: '8px 16px', background: (groupPostSending || !groupPostText.trim()) ? 'var(--text-light)' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 4, cursor: (groupPostSending || !groupPostText.trim()) ? 'not-allowed' : 'pointer', fontSize: 14 }}>{groupPostSending ? 'Отправка...' : 'Опубликовать'}</button>
+                    <button type="submit" disabled={groupPostSending || !groupPostText.trim()} style={{ flex: 1, minWidth: 120, padding: '8px 16px', background: (groupPostSending || !groupPostText.trim()) ? 'var(--text-light)' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: (groupPostSending || !groupPostText.trim()) ? 'not-allowed' : 'pointer', fontSize: 14 }}>{groupPostSending ? 'Отправка...' : 'Опубликовать'}</button>
                   </div>
                 </form>
               </div>
             )}
-            <h3 style={{ color: 'var(--text-primary)' }}>📝 Посты</h3>
+            <h3 style={{ color: 'var(--text-primary)' }}>Посты</h3>
             {groupPostsLoading && <FeedSkeleton />}
             {!groupPostsLoading && groupPosts.length === 0 && <p style={{ color: 'var(--text-muted)' }}>{g.is_member ? 'Постов пока нет. Будьте первым!' : 'Постов пока нет.'}</p>}
             {!groupPostsLoading && groupPosts.length > 0 && <VirtualPostList items={groupPosts} postCardProps={postCardProps} />}
@@ -1602,22 +1628,22 @@ function App() {
   if (viewMode === 'groups') {
     const list = groupsTab === 'all' ? groups : myGroups
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← К ленте" />
         {showCreateGroup && <CreateGroupModal onClose={() => setShowCreateGroup(false)} onCreate={handleCreateGroup} />}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 8 }}>
-          <h2 style={{ color: 'var(--text-primary)', margin: 0 }}>📁 Группы</h2>
-          <button onClick={() => setShowCreateGroup(true)} style={{ padding: '8px 14px', fontSize: 14, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', flexShrink: 0 }}>➕ Создать</button>
+          <h2 style={{ color: 'var(--text-primary)', margin: 0 }}>Группы</h2>
+          <button onClick={() => setShowCreateGroup(true)} style={{ padding: '8px 14px', fontSize: 14, background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}><IconPlus size={14} /> Создать</button>
         </div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <button onClick={() => setGroupsTab('all')} style={{ flex: 1, padding: 10, fontSize: 14, cursor: 'pointer', background: groupsTab === 'all' ? 'var(--accent)' : 'var(--bg-secondary)', color: groupsTab === 'all' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 4 }}>🌍 Все группы</button>
-          <button onClick={() => setGroupsTab('my')} style={{ flex: 1, padding: 10, fontSize: 14, cursor: 'pointer', background: groupsTab === 'my' ? 'var(--accent)' : 'var(--bg-secondary)', color: groupsTab === 'my' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 4 }}>👥 Мои ({myGroups.length})</button>
+          <button onClick={() => setGroupsTab('all')} style={{ flex: 1, padding: 10, fontSize: 14, cursor: 'pointer', background: groupsTab === 'all' ? 'var(--accent)' : 'var(--bg-secondary)', color: groupsTab === 'all' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 6 }}>Все группы</button>
+          <button onClick={() => setGroupsTab('my')} style={{ flex: 1, padding: 10, fontSize: 14, cursor: 'pointer', background: groupsTab === 'my' ? 'var(--accent)' : 'var(--bg-secondary)', color: groupsTab === 'my' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 6 }}>Мои ({myGroups.length})</button>
         </div>
         {groupsTab === 'all' && (
           <div style={{ position: 'relative', marginBottom: 12 }}>
-            <input type="text" placeholder="🔍 Поиск групп..." value={groupSearch} onChange={e => setGroupSearch(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && token) loadGroups(token, groupSearch) }} style={{ width: '100%', padding: '10px 40px 10px 14px', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, fontSize: 14, boxSizing: 'border-box' }} />
-            {groupSearch && <button onClick={() => { setGroupSearch(''); if (token) loadGroups(token, '') }} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: 'var(--text-muted)', padding: 4, lineHeight: 1 }}>✕</button>}
+            <input type="text" placeholder="Поиск групп..." value={groupSearch} onChange={e => setGroupSearch(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && token) loadGroups(token, groupSearch) }} style={{ width: '100%', padding: '10px 40px 10px 14px', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 6, fontSize: 14, boxSizing: 'border-box' }} />
+            {groupSearch && <button onClick={() => { setGroupSearch(''); if (token) loadGroups(token, '') }} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 4, lineHeight: 1, display: 'flex' }}><IconX size={16} /></button>}
           </div>
         )}
         {groupsLoading && groupsTab === 'all' && <FeedSkeleton />}
@@ -1627,11 +1653,11 @@ function App() {
             <GroupIcon emoji={g.cover_emoji} name={g.name} size={56} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                <strong style={{ color: 'var(--text-primary)', wordBreak: 'break-word' }}>{g.name} {g.is_private && '🔒'}</strong>
-                {g.is_owner && <span style={{ fontSize: 11, color: 'var(--accent)' }}>👑</span>}
+                <strong style={{ color: 'var(--text-primary)', wordBreak: 'break-word' }}>{g.name} {g.is_private && '· приватная'}</strong>
+                {g.is_owner && <span style={{ fontSize: 11, color: 'var(--accent)' }}>владелец</span>}
               </div>
               {g.description && <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{g.description}</div>}
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>👥 {g.members_count} · {g.is_member ? 'Вы участник' : 'Не вступили'}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>{g.members_count} · {g.is_member ? 'Вы участник' : 'Не вступили'}</div>
             </div>
           </div>
         ))}
@@ -1641,14 +1667,14 @@ function App() {
 
   if (viewMode === 'moderation' && isAdmin) {
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 700, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 700, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← К ленте" />
-        <h2 style={{ color: 'var(--text-primary)' }}>⚙️ Панель модератора</h2>
+        <h2 style={{ color: 'var(--text-primary)' }}>Панель модератора</h2>
         <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
           {(['pending', 'resolved', 'rejected', 'all'] as const).map(f => (
-            <button key={f} onClick={() => { setReportFilter(f); loadReports(token!, f) }} style={{ padding: '6px 12px', fontSize: 13, cursor: 'pointer', background: reportFilter === f ? 'var(--accent)' : 'var(--bg-secondary)', color: reportFilter === f ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 4 }}>
-              {f === 'pending' && '⏳ На рассмотрении'}{f === 'resolved' && '✅ Принятые'}{f === 'rejected' && '❌ Отклонённые'}{f === 'all' && '📋 Все'}
+            <button key={f} onClick={() => { setReportFilter(f); loadReports(token!, f) }} style={{ padding: '6px 12px', fontSize: 13, cursor: 'pointer', background: reportFilter === f ? 'var(--accent)' : 'var(--bg-secondary)', color: reportFilter === f ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 6 }}>
+              {f === 'pending' && 'На рассмотрении'}{f === 'resolved' && 'Принятые'}{f === 'rejected' && 'Отклонённые'}{f === 'all' && 'Все'}
             </button>
           ))}
         </div>
@@ -1658,30 +1684,30 @@ function App() {
           <div key={r.id} style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 14, marginBottom: 12, background: 'var(--bg-card)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
               <div>
-                <strong style={{ color: 'var(--text-primary)' }}>🚩 {r.reason}</strong>
+                <strong style={{ color: 'var(--text-primary)' }}>{r.reason}</strong>
                 <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Жалоба от <strong>{r.reporter_name}</strong> · {timeAgo(r.created_at)}</div>
               </div>
-              <span style={{ padding: '2px 8px', fontSize: 11, borderRadius: 10, background: r.status === 'pending' ? '#fef3c7' : r.status === 'resolved' ? '#d1fae5' : '#fee2e2', color: r.status === 'pending' ? '#92400e' : r.status === 'resolved' ? '#065f46' : '#991b1b' }}>
+              <span style={{ padding: '2px 8px', fontSize: 11, borderRadius: 10, background: r.status === 'pending' ? 'var(--accent-soft)' : 'var(--bg-secondary)', color: r.status === 'pending' ? 'var(--accent)' : 'var(--text-secondary)' }}>
                 {r.status === 'pending' && 'На рассмотрении'}{r.status === 'resolved' && 'Принято'}{r.status === 'rejected' && 'Отклонено'}
               </span>
             </div>
             <div style={{ padding: 10, background: 'var(--bg-secondary)', borderRadius: 6, fontSize: 13, marginBottom: 8, color: 'var(--text-secondary)' }}>
               <div style={{ marginBottom: 4 }}>
                 <strong>Тип:</strong>{' '}
-                {r.target_type === 'post' ? '📝 Пост' : r.target_type === 'comment' ? '💬 Комментарий' : r.target_type === 'group' ? '📁 Группа' : '👤 Пользователь'}
+                {r.target_type === 'post' ? 'Пост' : r.target_type === 'comment' ? 'Комментарий' : r.target_type === 'group' ? 'Группа' : 'Пользователь'}
                 {r.target_author && <> · Автор: <strong>{r.target_author}</strong></>}
-                {r.target_is_hidden && <span style={{ color: 'var(--danger)' }}> · 🚫 скрыт</span>}
-                {r.target_is_banned && <span style={{ color: 'var(--danger)' }}> · 🚫 забанен</span>}
+                {r.target_is_hidden && <span style={{ color: 'var(--danger)' }}> · скрыт</span>}
+                {r.target_is_banned && <span style={{ color: 'var(--danger)' }}> · забанен</span>}
               </div>
               {r.target_preview && <div style={{ fontStyle: 'italic' }}>«{r.target_preview}»</div>}
               {r.comment && <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px dashed var(--border)' }}><strong>Комментарий жалобщика:</strong> {r.comment}</div>}
             </div>
             {r.status === 'pending' && (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <button onClick={() => handleResolveReport(r.id, 'hide', false)} style={{ padding: '6px 14px', fontSize: 13, background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>🚫 Скрыть</button>
-                {(r.target_type === 'post' || r.target_type === 'comment') && <button onClick={() => handleResolveReport(r.id, 'hide', true)} style={{ padding: '6px 14px', fontSize: 13, background: '#9e4a4a', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>🚫 Скрыть + забанить</button>}
-                {r.target_type === 'user' && <button onClick={async () => { if (!token) return; if (!window.confirm('Забанить?')) return; try { const res = await fetch(`${API_URL}/admin/users/${r.target_id}/ban`, { method: 'POST', headers: authHeaders(token) }); if (!res.ok) throw new Error(); loadReports(token, reportFilter) } catch { alert('Ошибка') } }} style={{ padding: '6px 14px', fontSize: 13, background: '#7c2d12', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>⛔ Забанить</button>}
-                <button onClick={() => handleResolveReport(r.id, 'dismiss', false)} style={{ padding: '6px 14px', fontSize: 13, background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer' }}>✅ Отклонить</button>
+                <button onClick={() => handleResolveReport(r.id, 'hide', false)} style={{ padding: '6px 14px', fontSize: 13, background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Скрыть</button>
+                {(r.target_type === 'post' || r.target_type === 'comment') && <button onClick={() => handleResolveReport(r.id, 'hide', true)} style={{ padding: '6px 14px', fontSize: 13, background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Скрыть + забанить</button>}
+                {r.target_type === 'user' && <button onClick={async () => { if (!token) return; if (!window.confirm('Забанить?')) return; try { const res = await fetch(`${API_URL}/admin/users/${r.target_id}/ban`, { method: 'POST', headers: authHeaders(token) }); if (!res.ok) throw new Error(); loadReports(token, reportFilter) } catch { alert('Ошибка') } }} style={{ padding: '6px 14px', fontSize: 13, background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Забанить</button>}
+                <button onClick={() => handleResolveReport(r.id, 'dismiss', false)} style={{ padding: '6px 14px', fontSize: 13, background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>Отклонить</button>
               </div>
             )}
           </div>
@@ -1692,10 +1718,10 @@ function App() {
 
   if (viewMode === 'bookmarks') {
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← К ленте" />
-        <h2 style={{ color: 'var(--text-primary)' }}>🔖 Сохранённые посты</h2>
+        <h2 style={{ color: 'var(--text-primary)' }}>Сохранённые посты</h2>
         {bookmarksLoading && <FeedSkeleton />}
         {!bookmarksLoading && bookmarks.length === 0 && <p style={{ color: 'var(--text-muted)' }}>Здесь пока пусто.</p>}
         {!bookmarksLoading && bookmarks.length > 0 && <VirtualPostList items={bookmarks} postCardProps={postCardProps} />}
@@ -1705,10 +1731,10 @@ function App() {
 
   if (viewMode === 'trash') {
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← К ленте" />
-        <h2 style={{ color: 'var(--text-primary)' }}>🗑️ Корзина</h2>
+        <h2 style={{ color: 'var(--text-primary)' }}>Корзина</h2>
         {trashLoading && <FeedSkeleton />}
         {!trashLoading && deletedPosts.length === 0 && <p style={{ color: 'var(--text-muted)' }}>Корзина пуста.</p>}
         {!trashLoading && deletedPosts.length > 0 && <VirtualPostList items={deletedPosts} postCardProps={{ ...postCardProps, inTrash: true }} />}
@@ -1718,7 +1744,7 @@ function App() {
 
   if (viewMode === 'post') {
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← Назад к ленте" />
         {!focusedPost && <FeedSkeleton />}
@@ -1729,7 +1755,7 @@ function App() {
 
   if (viewMode === 'dialog' && dialogUser) {
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← К сообщениям" customBack={handleOpenMessages} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, padding: 12, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-panel)' }}>
@@ -1750,8 +1776,8 @@ function App() {
           <div ref={messagesEndRef} />
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-          <input type="text" className="chat-input" placeholder="Написать сообщение..." value={messageText} onChange={e => setMessageText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSendMessage() } }} disabled={sendingMessage} style={{ flex: 1, padding: 10, fontSize: 14, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, boxSizing: 'border-box', minWidth: 0 }} />
-          <button onClick={handleSendMessage} disabled={sendingMessage || !messageText.trim()} style={{ padding: '10px 20px', fontSize: 14, background: (sendingMessage || !messageText.trim()) ? 'var(--text-light)' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 4, cursor: (sendingMessage || !messageText.trim()) ? 'not-allowed' : 'pointer', flexShrink: 0 }}>{sendingMessage ? '...' : 'Отправить'}</button>
+          <input type="text" className="chat-input" placeholder="Написать сообщение..." value={messageText} onChange={e => setMessageText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSendMessage() } }} disabled={sendingMessage} style={{ flex: 1, padding: 10, fontSize: 14, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 6, boxSizing: 'border-box', minWidth: 0 }} />
+          <button onClick={handleSendMessage} disabled={sendingMessage || !messageText.trim()} style={{ padding: '10px 16px', background: (sendingMessage || !messageText.trim()) ? 'var(--text-light)' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: (sendingMessage || !messageText.trim()) ? 'not-allowed' : 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center' }}><IconSend size={18} /></button>
         </div>
       </div>
     )
@@ -1759,10 +1785,10 @@ function App() {
 
   if (viewMode === 'messages') {
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← К ленте" />
-        <h2 style={{ color: 'var(--text-primary)' }}>✉️ Сообщения</h2>
+        <h2 style={{ color: 'var(--text-primary)' }}>Сообщения</h2>
         {convsLoading && <FeedSkeleton />}
         {!convsLoading && conversations.length === 0 && <p style={{ color: 'var(--text-muted)' }}>Диалогов пока нет.</p>}
         {!convsLoading && conversations.map(c => (
@@ -1784,12 +1810,12 @@ function App() {
 
   if (viewMode === 'hashtag' && viewingHashtag) {
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← Назад к ленте" />
         <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 20, marginBottom: 24, background: 'var(--bg-card)' }}>
           <h1 style={{ margin: '0 0 8px 0', color: 'var(--accent)' }}>#{viewingHashtag}</h1>
-          {hashtagFeed && <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>📝 Постов: <strong>{hashtagFeed.posts_count}</strong></p>}
+          {hashtagFeed && <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>Постов: <strong>{hashtagFeed.posts_count}</strong></p>}
         </div>
         {hashtagLoading && <FeedSkeleton />}
         {!hashtagLoading && hashtagFeed && hashtagFeed.posts.length === 0 && <p style={{ color: 'var(--text-muted)' }}>Постов с этим хэштегом пока нет.</p>}
@@ -1803,32 +1829,32 @@ function App() {
     const profIsAdmin = !!profile?.user.is_admin
     const profIsBanned = !!profile?.user.is_banned
     return (
-      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
         <Header backButton backLabel="← Назад к ленте" />
         {profileLoading && <FeedSkeleton />}
         {!profileLoading && profile && (
           <>
             <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 20, marginBottom: 24, background: 'var(--bg-card)' }}>
-              {profIsBanned && <div style={{ marginBottom: 12, padding: '6px 12px', background: 'rgba(184,92,92,0.15)', color: 'var(--danger)', borderRadius: 4, fontSize: 13 }}>🚫 Пользователь заблокирован</div>}
+              {profIsBanned && <div style={{ marginBottom: 12, padding: '6px 12px', background: 'var(--accent-soft)', color: 'var(--danger)', borderRadius: 6, fontSize: 13 }}>Пользователь заблокирован</div>}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 16, flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                   <div className="profile-avatar"><Avatar url={profile.user.avatar} username={profile.user.username} size={80} /></div>
                   <div>
-                    <h1 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>{profile.user.username}{profIsAdmin && ' 👑'}</h1>
-                    <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: 14 }}>📅 {new Date(profile.user.created_at).toLocaleDateString('ru-RU')}</p>
+                    <h1 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>{profile.user.username}{profIsAdmin && ' · админ'}</h1>
+                    <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: 14 }}>С нами с {new Date(profile.user.created_at).toLocaleDateString('ru-RU')}</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {!isOwn && <button onClick={() => handleOpenDialog(profile.user.username)} style={{ padding: '10px 20px', fontSize: 14, background: 'transparent', color: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 4, cursor: 'pointer' }}>✉️ Написать</button>}
-                  {profile.can_follow && !profIsBanned && <button onClick={handleFollowToggle} disabled={followLoading} style={{ padding: '10px 20px', fontSize: 14, background: profile.is_following ? 'transparent' : 'var(--accent)', color: profile.is_following ? 'var(--text-primary)' : '#fff', border: profile.is_following ? '1px solid var(--border)' : 'none', borderRadius: 4, cursor: followLoading ? 'not-allowed' : 'pointer' }}>{followLoading ? '...' : (profile.is_following ? 'Отписаться' : 'Подписаться')}</button>}
-                  {!isOwn && !profIsAdmin && <button onClick={() => handleBanUser(profile.user.id)} style={{ padding: '10px 16px', fontSize: 14, background: profIsBanned ? 'var(--success)' : '#7c2d12', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>{profIsBanned ? '✅ Разбанить' : '⛔ Забанить'}</button>}
-                  {!isOwn && <button onClick={() => setReportModal({ type: 'user', id: profile.user.id })} style={{ padding: '10px 16px', fontSize: 14, background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer' }}>🚩</button>}
+                  {!isOwn && <button onClick={() => handleOpenDialog(profile.user.username)} style={{ padding: '10px 20px', fontSize: 14, background: 'transparent', color: 'var(--accent)', border: '1px solid var(--accent)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}><IconMessage size={16} /> Написать</button>}
+                  {profile.can_follow && !profIsBanned && <button onClick={handleFollowToggle} disabled={followLoading} style={{ padding: '10px 20px', fontSize: 14, background: profile.is_following ? 'transparent' : 'var(--accent)', color: profile.is_following ? 'var(--text-primary)' : '#fff', border: profile.is_following ? '1px solid var(--border)' : 'none', borderRadius: 6, cursor: followLoading ? 'not-allowed' : 'pointer' }}>{followLoading ? '...' : (profile.is_following ? 'Отписаться' : 'Подписаться')}</button>}
+                  {!isOwn && !profIsAdmin && <button onClick={() => handleBanUser(profile.user.id)} style={{ padding: '10px 16px', fontSize: 14, background: profIsBanned ? 'var(--success)' : 'var(--danger)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>{profIsBanned ? 'Разбанить' : 'Забанить'}</button>}
+                  {!isOwn && <button onClick={() => setReportModal({ type: 'user', id: profile.user.id })} style={{ padding: '10px 16px', background: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', display: 'flex' }}><IconFlag size={16} /></button>}
                   {isOwn && (
                     <>
-                      <button onClick={handleOpenTrash} style={{ padding: '10px 16px', fontSize: 14, background: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer' }}>🗑️ Корзина</button>
-                      <label style={{ padding: '10px 20px', fontSize: 14, background: avatarUploading ? 'var(--text-light)' : 'var(--success)', color: '#fff', borderRadius: 4, cursor: avatarUploading ? 'not-allowed' : 'pointer' }}>
-                        {avatarUploading ? 'Загрузка...' : '📷 Аватар'}
+                      <button onClick={handleOpenTrash} style={{ padding: '10px 16px', fontSize: 14, background: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}><IconTrash size={16} /> Корзина</button>
+                      <label style={{ padding: '10px 20px', fontSize: 14, background: avatarUploading ? 'var(--text-light)' : 'var(--success)', color: '#fff', borderRadius: 6, cursor: avatarUploading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <IconCamera size={16} /> {avatarUploading ? 'Загрузка...' : 'Аватар'}
                         <input type="file" accept="image/*" disabled={avatarUploading} onChange={e => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f); e.target.value = '' }} style={{ display: 'none' }} />
                       </label>
                     </>
@@ -1836,10 +1862,10 @@ function App() {
                 </div>
               </div>
               <div className="profile-stats" style={{ display: 'flex', gap: 24, fontSize: 15, flexWrap: 'wrap', color: 'var(--text-primary)' }}>
-                <span>📝 Постов: <strong>{profile.posts_count}</strong></span>
-                <span>👥 Подписчиков: <strong>{profile.followers_count}</strong></span>
-                <span>➡️ Подписок: <strong>{profile.following_count}</strong></span>
-                <span>❤️ Получено лайков: <strong>{profile.likes_received}</strong></span>
+                <span>Постов: <strong>{profile.posts_count}</strong></span>
+                <span>Подписчиков: <strong>{profile.followers_count}</strong></span>
+                <span>Подписок: <strong>{profile.following_count}</strong></span>
+                <span>Лайков: <strong>{profile.likes_received}</strong></span>
               </div>
             </div>
             <h2 style={{ color: 'var(--text-primary)' }}>{isOwn ? 'Мои посты' : `Посты ${profile.user.username}`}</h2>
@@ -1860,15 +1886,16 @@ function App() {
   ) : null)
 
   return (
-    <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+    <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
       <ScrollToTop />
       <BottomNav />
       <Header />
       {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
 
       <div style={{ position: 'relative', marginBottom: 12 }}>
-        <input type="text" className="search-input" placeholder="🔍 Поиск пользователей, постов, групп..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '10px 40px 10px 14px', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, fontSize: 14, boxSizing: 'border-box' }} />
-        {searchQuery && <button onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: 'var(--text-muted)', padding: 4, lineHeight: 1 }}>✕</button>}
+        <input type="text" className="search-input" placeholder="Поиск пользователей, постов, групп..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ width: '100%', padding: '10px 40px 10px 38px', background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 8, fontSize: 14, boxSizing: 'border-box' }} />
+        <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', display: 'flex', pointerEvents: 'none' }}><IconSearch size={16} /></span>
+        {searchQuery && <button onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 4, lineHeight: 1, display: 'flex' }}><IconX size={16} /></button>}
       </div>
 
       {!isSearching && <TrendingBlock trending={trending} onHashtagClick={handleHashtagClick} />}
@@ -1878,13 +1905,13 @@ function App() {
           <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
             {(['all', 'posts', 'users', 'groups'] as const).map(t => (
               <button key={t} onClick={() => setSearchType(t)} style={{ padding: '4px 10px', fontSize: 12, cursor: 'pointer', background: searchType === t ? 'var(--accent)' : 'var(--bg-secondary)', color: searchType === t ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 12 }}>
-                {t === 'all' ? '📋 Всё' : t === 'posts' ? '📝 Посты' : t === 'users' ? '👤 Люди' : '📁 Группы'}
+                {t === 'all' ? 'Всё' : t === 'posts' ? 'Посты' : t === 'users' ? 'Люди' : 'Группы'}
               </button>
             ))}
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
               {(['newest', 'popular'] as const).map(s => (
                 <button key={s} onClick={() => setSearchSort(s)} style={{ padding: '4px 10px', fontSize: 12, cursor: 'pointer', background: searchSort === s ? 'var(--accent)' : 'var(--bg-secondary)', color: searchSort === s ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 12 }}>
-                  {s === 'newest' ? '🆕 Новые' : '🔥 Популярные'}
+                  {s === 'newest' ? 'Новые' : 'Популярные'}
                 </button>
               ))}
             </span>
@@ -1894,35 +1921,35 @@ function App() {
             <>
               {searchResults.groups && searchResults.groups.length > 0 && (
                 <>
-                  <h3 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>📁 Группы ({searchResults.groups.length})</h3>
+                  <h3 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>Группы ({searchResults.groups.length})</h3>
                   <div style={{ marginBottom: 20 }}>
                     {searchResults.groups.map(g => (
                       <div key={g.id} onClick={() => handleOpenGroup(g.id)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 10, marginBottom: 6, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>
                         <GroupIcon emoji={g.cover_emoji} name={g.name} size={40} />
                         <div>
-                          <strong style={{ color: 'var(--accent)' }}>{g.name} {g.is_private && '🔒'}</strong>
-                          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>👥 {g.members_count} участников</div>
+                          <strong style={{ color: 'var(--accent)' }}>{g.name} {g.is_private && '· приватная'}</strong>
+                          <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>{g.members_count} участников</div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </>
               )}
-              <h3 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>👤 Пользователи {searchResults.users.length > 0 && `(${searchResults.users.length})`}</h3>
+              <h3 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>Пользователи {searchResults.users.length > 0 && `(${searchResults.users.length})`}</h3>
               {searchResults.users.length === 0 ? <p style={{ color: 'var(--text-muted)', fontSize: 14, margin: '0 0 20px 0' }}>Пользователи не найдены</p> : (
                 <div style={{ marginBottom: 20 }}>
                   {searchResults.users.map(u => (
                     <div key={u.id} onClick={() => handleAuthorClick(u.username)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 10, marginBottom: 6, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer' }}>
                       <Avatar url={u.avatar} username={u.username} size={40} />
                       <div>
-                        <strong style={{ color: 'var(--accent)' }}>{u.username}{u.is_admin && ' 👑'}{u.is_banned && ' 🚫'}</strong>
+                        <strong style={{ color: 'var(--accent)' }}>{u.username}{u.is_admin && ' · админ'}{u.is_banned && ' · забанен'}</strong>
                         <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>С нами с {new Date(u.created_at).toLocaleDateString('ru-RU')}</div>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-              <h3 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>📝 Посты {searchResults.posts.length > 0 && `(${searchResults.posts.length})`}</h3>
+              <h3 style={{ marginBottom: 12, color: 'var(--text-primary)' }}>Посты {searchResults.posts.length > 0 && `(${searchResults.posts.length})`}</h3>
               {searchResults.posts.length === 0 ? <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Посты не найдены</p> : searchResults.posts.map(post => (
                 <PostWrapper key={post.id}><PostCard post={post} {...postCardProps} /></PostWrapper>
               ))}
@@ -1933,26 +1960,26 @@ function App() {
         <>
           <div className="create-post-form" style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 16, marginBottom: 16, background: 'var(--bg-card)' }}>
             <form onSubmit={handleCreatePost}>
-              <textarea placeholder={`Что нового, ${username}? Добавь #хэштег для поиска`} value={text} onChange={e => setText(e.target.value)} disabled={sending} rows={3} style={{ width: '100%', padding: 10, marginBottom: 8, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 4, fontSize: 14, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
+              <textarea placeholder={`Что нового, ${username}?`} value={text} onChange={e => setText(e.target.value)} disabled={sending} rows={3} style={{ width: '100%', padding: 10, marginBottom: 8, background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-input)', borderRadius: 6, fontSize: 14, fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }} />
               {imagePreview && (
                 <div style={{ position: 'relative', marginBottom: 8 }}>
                   <img src={imagePreview} alt="preview" style={{ width: '100%', maxHeight: 300, objectFit: 'cover', borderRadius: 6, display: 'block' }} />
-                  <button type="button" onClick={() => handleImageSelect(null)} style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', fontSize: 18, lineHeight: 1 }}>×</button>
+                  <button type="button" onClick={() => handleImageSelect(null)} style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IconX size={16} /></button>
                 </div>
               )}
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <label style={{ padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderRadius: 4, cursor: 'pointer', fontSize: 14 }}>
-                  📷 {imageFile ? 'Заменить' : 'Картинка'}
+                <label style={{ padding: '8px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', borderRadius: 6, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <IconCamera size={16} /> {imageFile ? 'Заменить' : 'Картинка'}
                   <input type="file" accept="image/*" onChange={e => handleImageSelect(e.target.files?.[0] || null)} disabled={sending} style={{ display: 'none' }} />
                 </label>
-                <button type="submit" disabled={sending || !text.trim()} style={{ flex: 1, minWidth: 120, padding: '8px 16px', background: (sending || !text.trim()) ? 'var(--text-light)' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 4, cursor: (sending || !text.trim()) ? 'not-allowed' : 'pointer', fontSize: 14 }}>{sending ? 'Отправка...' : 'Опубликовать'}</button>
+                <button type="submit" disabled={sending || !text.trim()} style={{ flex: 1, minWidth: 120, padding: '8px 16px', background: (sending || !text.trim()) ? 'var(--text-light)' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 6, cursor: (sending || !text.trim()) ? 'not-allowed' : 'pointer', fontSize: 14 }}>{sending ? 'Отправка...' : 'Опубликовать'}</button>
               </div>
             </form>
           </div>
           <div className="feed-tabs" style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-            <button onClick={() => handleFeedChange('all')} style={{ flex: 1, padding: 10, fontSize: 13, cursor: 'pointer', background: feedType === 'all' ? 'var(--accent)' : 'var(--bg-secondary)', color: feedType === 'all' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 4 }}>🌍 Все</button>
-            <button onClick={() => handleFeedChange('following')} style={{ flex: 1, padding: 10, fontSize: 13, cursor: 'pointer', background: feedType === 'following' ? 'var(--accent)' : 'var(--bg-secondary)', color: feedType === 'following' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 4 }}>👥 Подписки</button>
-            <button onClick={() => handleFeedChange('recommended')} style={{ flex: 1, padding: 10, fontSize: 13, cursor: 'pointer', background: feedType === 'recommended' ? 'var(--accent)' : 'var(--bg-secondary)', color: feedType === 'recommended' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 4 }}>✨ Для вас</button>
+            <button onClick={() => handleFeedChange('all')} style={{ flex: 1, padding: 10, fontSize: 13, cursor: 'pointer', background: feedType === 'all' ? 'var(--accent)' : 'var(--bg-secondary)', color: feedType === 'all' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 6 }}>Все</button>
+            <button onClick={() => handleFeedChange('following')} style={{ flex: 1, padding: 10, fontSize: 13, cursor: 'pointer', background: feedType === 'following' ? 'var(--accent)' : 'var(--bg-secondary)', color: feedType === 'following' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 6 }}>Подписки</button>
+            <button onClick={() => handleFeedChange('recommended')} style={{ flex: 1, padding: 10, fontSize: 13, cursor: 'pointer', background: feedType === 'recommended' ? 'var(--accent)' : 'var(--bg-secondary)', color: feedType === 'recommended' ? '#fff' : 'var(--text-primary)', border: 'none', borderRadius: 6 }}>Для вас</button>
           </div>
           {loading && <FeedSkeleton />}
           {!loading && posts.length === 0 && <p style={{ color: 'var(--text-muted)' }}>{feedType === 'following' ? 'Здесь пока пусто.' : feedType === 'recommended' ? 'Пока нечего рекомендовать. Подпишитесь на кого-нибудь и возвращайтесь!' : 'Постов пока нет.'}</p>}
