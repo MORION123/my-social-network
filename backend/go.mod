@@ -46,4 +46,5 @@ require (
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
+	github.com/sendgrid/sendgrid-go v3.16.0+incompatible
 )
