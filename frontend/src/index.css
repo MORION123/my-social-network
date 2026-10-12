@@ -1,59 +1,65 @@
 :root {
-  /* Фон */
-  --bg-body: #f7f8fa;
+  --bg-body: #f5f6f8;
   --bg-card: #ffffff;
-  --bg-card-edit: #fdf8ec;
-  --bg-input: #f2f3f5;
+  --bg-card-edit: #f0f2f5;
+  --bg-input: #eef0f3;
   --bg-panel: #ffffff;
-  --bg-hover: #eceef1;
+  --bg-hover: #e8ebef;
   --bg-reply: #fafbfc;
-  --bg-secondary: #eceef1;
+  --bg-secondary: #eef0f3;
 
-  /* Текст */
-  --text-primary: #1a1a1a;
-  --text-secondary: #5a5a5a;
-  --text-muted: #8a8a8a;
-  --text-light: #b0b0b0;
+  --text-primary: #1a1c1f;
+  --text-secondary: #5a5f68;
+  --text-muted: #8a909a;
+  --text-light: #b0b6c0;
   --text-on-accent: #ffffff;
 
-  /* Границы */
-  --border: #e2e4e8;
+  --border: #e2e5ea;
   --border-light: #eef0f3;
   --border-input: #d8dce2;
-  --border-strong: #c8ccd2;
+  --border-strong: #c8ccd4;
 
-  /* Акценты (мягкие) */
-  --accent: #4a6fa5;
-  --accent-hover: #3d5d8a;
-  --success: #5c9e6e;
-  --danger: #b85c5c;
-  --like: #c96b7e;
+  --accent: #5a6b7d;
+  --accent-hover: #4a5a6b;
+  --accent-soft: rgba(90, 107, 125, 0.12);
+  --success: #5c8a6e;
+  --danger: #a85c5c;
+  --like: #5a6b7d;
 
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow: 0 2px 8px rgba(26, 28, 31, 0.06);
+  --glow: 0 0 12px rgba(90, 107, 125, 0.45);
 }
 
 .dark {
-  --bg-body: #1a1a1e;
-  --bg-card: #242428;
-  --bg-card-edit: #2e2a20;
-  --bg-input: #2e2e33;
-  --bg-panel: #242428;
-  --bg-hover: #33333a;
-  --bg-reply: #2a2a2f;
-  --bg-secondary: #2e2e33;
+  --bg-body: #16181c;
+  --bg-card: #1e2025;
+  --bg-card-edit: #22252b;
+  --bg-input: #252830;
+  --bg-panel: #1e2025;
+  --bg-hover: #2a2e36;
+  --bg-reply: #1a1c20;
+  --bg-secondary: #252830;
 
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0a0;
-  --text-muted: #707070;
-  --text-light: #555555;
+  --text-primary: #e0e2e6;
+  --text-secondary: #9aa0a8;
+  --text-muted: #6a7078;
+  --text-light: #4a5058;
   --text-on-accent: #ffffff;
 
-  --border: #2e2e33;
-  --border-light: #2a2a2f;
-  --border-input: #3a3a40;
-  --border-strong: #4a4a50;
+  --border: #2a2e36;
+  --border-light: #22252b;
+  --border-input: #353a44;
+  --border-strong: #444a54;
+
+  --accent: #7a8fa3;
+  --accent-hover: #8a9fb3;
+  --accent-soft: rgba(122, 143, 163, 0.16);
+  --success: #6e9a7e;
+  --danger: #b86c6c;
+  --like: #7a8fa3;
 
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --glow: 0 0 14px rgba(122, 143, 163, 0.5);
 }
 
 * {
@@ -66,7 +72,7 @@ html, body {
   background: var(--bg-body);
   color: var(--text-primary);
   transition: background 0.2s ease, color 0.2s ease;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -92,7 +98,6 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Мягкий скроллбар */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -108,7 +113,67 @@ input[type="number"]::-webkit-inner-spin-button {
   background: var(--text-muted);
 }
 
-/* Отступ снизу, чтобы нижняя навигация не перекрывала контент */
 .has-bottom-nav {
   padding-bottom: 80px !important;
+}
+
+/* Логотип MORION */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.brand-logo {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+.brand-name {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.25em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+@media (max-width: 640px) {
+  .brand-logo { height: 24px; }
+  .brand-name { font-size: 14px; letter-spacing: 0.2em; }
+}
+
+/* Лайк со свечением */
+.like-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.3s ease, transform 0.15s ease;
+}
+.like-btn:hover {
+  background: var(--bg-hover);
+}
+.like-btn:active {
+  transform: scale(0.92);
+}
+.like-btn.liked {
+  color: var(--like);
+  box-shadow: var(--glow);
+}
+.like-btn.liked svg {
+  filter: drop-shadow(0 0 4px var(--like));
+}
+@keyframes likePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.like-btn.liked.just-liked {
+  animation: likePop 0.35s ease-out;
 }
