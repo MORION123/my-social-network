@@ -1,55 +1,59 @@
 :root {
-  --bg-body: #ffffff;
-  --bg-card: #f9f9f9;
-  --bg-card-edit: #fff8e1;
-  --bg-input: #ffffff;
+  /* Фон */
+  --bg-body: #f7f8fa;
+  --bg-card: #ffffff;
+  --bg-card-edit: #fdf8ec;
+  --bg-input: #f2f3f5;
   --bg-panel: #ffffff;
-  --bg-hover: #f0f0f0;
-  --bg-reply: #ffffff;
-  --bg-secondary: #eeeeee;
+  --bg-hover: #eceef1;
+  --bg-reply: #fafbfc;
+  --bg-secondary: #eceef1;
 
+  /* Текст */
   --text-primary: #1a1a1a;
-  --text-secondary: #555555;
-  --text-muted: #888888;
-  --text-light: #aaaaaa;
+  --text-secondary: #5a5a5a;
+  --text-muted: #8a8a8a;
+  --text-light: #b0b0b0;
   --text-on-accent: #ffffff;
 
-  --border: #dddddd;
-  --border-light: #eeeeee;
-  --border-input: #cccccc;
-  --border-strong: #bbbbbb;
+  /* Границы */
+  --border: #e2e4e8;
+  --border-light: #eef0f3;
+  --border-input: #d8dce2;
+  --border-strong: #c8ccd2;
 
-  --accent: #007bff;
-  --accent-hover: #0069d9;
-  --success: #28a745;
-  --danger: #dc3545;
-  --like: #e0245e;
+  /* Акценты (мягкие) */
+  --accent: #4a6fa5;
+  --accent-hover: #3d5d8a;
+  --success: #5c9e6e;
+  --danger: #b85c5c;
+  --like: #c96b7e;
 
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .dark {
-  --bg-body: #18191a;
-  --bg-card: #242526;
-  --bg-card-edit: #3a3520;
-  --bg-input: #3a3b3c;
-  --bg-panel: #242526;
-  --bg-hover: #3a3b3c;
-  --bg-reply: #2e2f30;
-  --bg-secondary: #3a3b3c;
+  --bg-body: #1a1a1e;
+  --bg-card: #242428;
+  --bg-card-edit: #2e2a20;
+  --bg-input: #2e2e33;
+  --bg-panel: #242428;
+  --bg-hover: #33333a;
+  --bg-reply: #2a2a2f;
+  --bg-secondary: #2e2e33;
 
-  --text-primary: #e4e6eb;
-  --text-secondary: #b0b3b8;
-  --text-muted: #8a8d91;
-  --text-light: #6b6e72;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #707070;
+  --text-light: #555555;
   --text-on-accent: #ffffff;
 
-  --border: #3e4042;
-  --border-light: #3a3b3c;
-  --border-input: #4e4f50;
-  --border-strong: #5a5b5c;
+  --border: #2e2e33;
+  --border-light: #2a2a2f;
+  --border-input: #3a3a40;
+  --border-strong: #4a4a50;
 
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -63,6 +67,7 @@ html, body {
   color: var(--text-primary);
   transition: background 0.2s ease, color 0.2s ease;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
@@ -81,9 +86,29 @@ input::placeholder, textarea::placeholder {
   opacity: 1;
 }
 
-/* Скрыть стрелки в input[type=number] (если понадобится) */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Мягкий скроллбар */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Отступ снизу, чтобы нижняя навигация не перекрывала контент */
+.has-bottom-nav {
+  padding-bottom: 80px !important;
 }
