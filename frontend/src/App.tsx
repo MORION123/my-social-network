@@ -126,8 +126,8 @@ type TopAuthor = { author: string; posts_count: number; likes_count: number; ava
 type DailyStats = { posts: DailyStat[]; users: DailyStat[]; comments: DailyStat[] }
 type TotalStats = { users_count: number; posts_count: number; pending_reports: number; banned_users: number; groups_count: number }
 
-const API_URL = 'https://my-social-network-78kr.onrender.com/api'
-const BACKEND_URL = 'https://my-social-network-78kr.onrender.com'
+const API_URL = 'https://api.morionn.ru/api'
+const BACKEND_URL = 'https://api.morionn.ru'
 
 const PAGE_SIZE = 20
 const QUICK_EMOJIS = ['❤️', '😂', '👍', '🔥', '😮', '😢']
