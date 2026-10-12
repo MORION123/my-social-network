@@ -114,7 +114,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .has-bottom-nav {
-  padding-bottom: 80px !important;
+  padding-bottom: 96px !important;
 }
 
 /* Логотип MORION */
@@ -125,22 +125,16 @@ input[type="number"]::-webkit-inner-spin-button {
   cursor: pointer;
   user-select: none;
 }
-.brand-logo {
-  height: 28px;
-  width: auto;
-  display: block;
-}
 .brand-name {
   font-family: 'Manrope', sans-serif;
   font-weight: 800;
-  font-size: 16px;
-  letter-spacing: 0.25em;
+  font-size: 18px;
+  letter-spacing: 0.28em;
   color: var(--text-primary);
   text-transform: uppercase;
 }
 @media (max-width: 640px) {
-  .brand-logo { height: 24px; }
-  .brand-name { font-size: 14px; letter-spacing: 0.2em; }
+  .brand-name { font-size: 15px; letter-spacing: 0.22em; }
 }
 
 /* Лайк со свечением */
@@ -176,4 +170,16 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 .like-btn.liked.just-liked {
   animation: likePop 0.35s ease-out;
+}
+
+/* Футер */
+.app-footer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-light);
+  opacity: 0.45;
+  padding: 6px 0 0 0;
+  letter-spacing: 0.08em;
+  user-select: none;
+  font-weight: 500;
 }
