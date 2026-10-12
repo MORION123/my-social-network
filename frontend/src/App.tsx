@@ -8,7 +8,7 @@ import {
   IconHeart, IconHeartFilled, IconComment, IconRepost, IconBookmark, IconBookmarkFilled,
   IconHome, IconMessage, IconUser, IconBell, IconMenu, IconFolder, IconTrash,
   IconSettings, IconChart, IconMoon, IconSun, IconLogout, IconFlag, IconEdit,
-  IconX, IconCamera, IconPlus, IconSearch, IconArrowLeft, IconRestore, IconSend,
+  IconX, IconCamera, IconPlus, IconSearch, IconRestore, IconSend,
 } from './Icons'
 
 const GLOBAL_STYLES = `
@@ -1461,40 +1461,32 @@ function App() {
     </div>
   )
 
-  const Header = ({ backButton = false, backLabel = '← Назад', customBack }: { backButton?: boolean; backLabel?: string; customBack?: () => void }) => (
+  const Header = () => (
     <div className="app-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 8, position: 'relative' }}>
-      {backButton ? (
-        <button onClick={customBack || handleBackToFeed} style={{ padding: '6px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', fontSize: 13, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <IconArrowLeft size={14} /> {backLabel.replace('← ', '')}
-        </button>
-      ) : (
-        <div className="brand" onClick={handleBackToFeed}>
-          <span className="brand-name">MORION</span>
-        </div>
-      )}
+      <div className="brand" onClick={handleBackToFeed}>
+        <span className="brand-name">MORION</span>
+      </div>
       <div className="app-header-buttons" style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 4 }}>
         <NotificationBell unreadCount={unreadCount} notifications={notifications} isOpen={showNotifs} onToggle={handleToggleNotifs} onMarkAllRead={handleMarkAllRead} onNotificationClick={handleNotifClick} />
-        {!backButton && (
-          <div ref={menuRef} style={{ position: 'relative' }}>
-            <button onClick={() => setShowMenu(v => !v)} title="Меню" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px', lineHeight: 1, color: 'var(--text-primary)', display: 'flex', borderRadius: 8 }}><IconMenu size={22} /></button>
-            {showMenu && (
-              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, minWidth: 220, background: 'var(--bg-panel)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: 'var(--shadow)', zIndex: 200, overflow: 'hidden' }}>
-                <button onClick={() => { setShowMenu(false); handleAuthorClick(username) }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconUser size={16} /> Профиль</button>
-                <button onClick={() => { setShowMenu(false); handleOpenGroups() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconFolder size={16} /> Группы</button>
-                <button onClick={() => { setShowMenu(false); handleOpenBookmarks() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconBookmark size={16} /> Сохранённые</button>
-                <button onClick={() => { setShowMenu(false); handleOpenTrash() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconTrash size={16} /> Корзина</button>
-                {isAdmin && (
-                  <>
-                    <button onClick={() => { setShowMenu(false); handleOpenModeration() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconSettings size={16} /> Модерация {pendingReports > 0 && `(${pendingReports})`}</button>
-                    <button onClick={() => { setShowMenu(false); handleOpenAnalytics() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconChart size={16} /> Аналитика</button>
-                  </>
-                )}
-                <button onClick={() => { toggleTheme(); setShowMenu(false) }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>{theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />} {theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</button>
-                <button onClick={() => { setShowMenu(false); handleLogout() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--danger)' }}><IconLogout size={16} /> Выйти</button>
-              </div>
-            )}
-          </div>
-        )}
+        <div ref={menuRef} style={{ position: 'relative' }}>
+          <button onClick={() => setShowMenu(v => !v)} title="Меню" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px', lineHeight: 1, color: 'var(--text-primary)', display: 'flex', borderRadius: 8 }}><IconMenu size={22} /></button>
+          {showMenu && (
+            <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 8, minWidth: 220, background: 'var(--bg-panel)', border: '1px solid var(--border)', borderRadius: 10, boxShadow: 'var(--shadow)', zIndex: 200, overflow: 'hidden' }}>
+              <button onClick={() => { setShowMenu(false); handleAuthorClick(username) }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconUser size={16} /> Профиль</button>
+              <button onClick={() => { setShowMenu(false); handleOpenGroups() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconFolder size={16} /> Группы</button>
+              <button onClick={() => { setShowMenu(false); handleOpenBookmarks() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconBookmark size={16} /> Сохранённые</button>
+              <button onClick={() => { setShowMenu(false); handleOpenTrash() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconTrash size={16} /> Корзина</button>
+              {isAdmin && (
+                <>
+                  <button onClick={() => { setShowMenu(false); handleOpenModeration() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconSettings size={16} /> Модерация {pendingReports > 0 && `(${pendingReports})`}</button>
+                  <button onClick={() => { setShowMenu(false); handleOpenAnalytics() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}><IconChart size={16} /> Аналитика</button>
+                </>
+              )}
+              <button onClick={() => { toggleTheme(); setShowMenu(false) }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>{theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />} {theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</button>
+              <button onClick={() => { setShowMenu(false); handleLogout() }} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--danger)' }}><IconLogout size={16} /> Выйти</button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -1503,7 +1495,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 700, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← К ленте" />
+        <Header />
         <h2 style={{ color: 'var(--text-primary)' }}>Аналитика</h2>
         {analyticsLoading && <FeedSkeleton />}
         {!analyticsLoading && totalStats && (
@@ -1547,7 +1539,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← К группам" customBack={handleOpenGroups} />
+        <Header />
         {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
         <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 20, marginBottom: 20, background: 'var(--bg-card)' }}>
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 12 }}>
@@ -1631,7 +1623,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← К ленте" />
+        <Header />
         {showCreateGroup && <CreateGroupModal onClose={() => setShowCreateGroup(false)} onCreate={handleCreateGroup} />}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 8 }}>
           <h2 style={{ color: 'var(--text-primary)', margin: 0 }}>Группы</h2>
@@ -1670,7 +1662,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 700, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← К ленте" />
+        <Header />
         <h2 style={{ color: 'var(--text-primary)' }}>Панель модератора</h2>
         <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
           {(['pending', 'resolved', 'rejected', 'all'] as const).map(f => (
@@ -1721,7 +1713,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← К ленте" />
+        <Header />
         <h2 style={{ color: 'var(--text-primary)' }}>Сохранённые посты</h2>
         {bookmarksLoading && <FeedSkeleton />}
         {!bookmarksLoading && bookmarks.length === 0 && <p style={{ color: 'var(--text-muted)' }}>Здесь пока пусто.</p>}
@@ -1734,7 +1726,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← К ленте" />
+        <Header />
         <h2 style={{ color: 'var(--text-primary)' }}>Корзина</h2>
         {trashLoading && <FeedSkeleton />}
         {!trashLoading && deletedPosts.length === 0 && <p style={{ color: 'var(--text-muted)' }}>Корзина пуста.</p>}
@@ -1747,7 +1739,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← Назад к ленте" />
+        <Header />
         {!focusedPost && <FeedSkeleton />}
         {focusedPost && <PostWrapper><PostCard post={focusedPost} {...postCardProps} /></PostWrapper>}
       </div>
@@ -1758,7 +1750,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← К сообщениям" customBack={handleOpenMessages} />
+        <Header />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, padding: 12, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-panel)' }}>
           {dialog?.user && <Avatar url={dialog.user.avatar} username={dialog.user.username} size={48} />}
           <div>
@@ -1788,7 +1780,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← К ленте" />
+        <Header />
         <h2 style={{ color: 'var(--text-primary)' }}>Сообщения</h2>
         {convsLoading && <FeedSkeleton />}
         {!convsLoading && conversations.length === 0 && <p style={{ color: 'var(--text-muted)' }}>Диалогов пока нет.</p>}
@@ -1813,7 +1805,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← Назад к ленте" />
+        <Header />
         <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 20, marginBottom: 24, background: 'var(--bg-card)' }}>
           <h1 style={{ margin: '0 0 8px 0', color: 'var(--accent)' }}>#{viewingHashtag}</h1>
           {hashtagFeed && <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: 14 }}>Постов: <strong>{hashtagFeed.posts_count}</strong></p>}
@@ -1832,7 +1824,7 @@ function App() {
     return (
       <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
         <BottomNav />
-        <Header backButton backLabel="← Назад к ленте" />
+        <Header />
         {profileLoading && <FeedSkeleton />}
         {!profileLoading && profile && (
           <>
@@ -1893,7 +1885,6 @@ function App() {
       <Header />
       {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
 
-      {/* Модальное окно создания поста */}
       {showCreatePost && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 1000, padding: 20, paddingTop: 60 }} onClick={() => setShowCreatePost(false)}>
           <div className="modal-box" style={{ background: 'var(--bg-panel)', borderRadius: 12, padding: 20, maxWidth: 560, width: '100%', border: '1px solid var(--border)', maxHeight: '85vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
@@ -1929,7 +1920,6 @@ function App() {
 
       {!isSearching && (
         <>
-          {/* Кнопка создания поста */}
           <button
             onClick={() => setShowCreatePost(true)}
             style={{
