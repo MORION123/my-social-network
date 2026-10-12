@@ -41,7 +41,7 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   .post-actions button { font-size: 14px !important; padding: 4px 6px !important; }
   .create-post-form { padding: 12px !important; }
   .search-input { padding: 10px 36px 10px 12px !important; font-size: 13px !important; }
-  .scroll-to-top { bottom: 16px !important; right: 16px !important; width: 42px !important; height: 42px !important; font-size: 20px !important; }
+  .scroll-to-top { bottom: 88px !important; right: 16px !important; width: 42px !important; height: 42px !important; font-size: 20px !important; }
   .app-header-buttons button { font-size: 18px !important; padding: 3px 5px !important; }
   .modal-box { padding: 18px !important; margin: 12px !important; }
   .modal-box h3 { font-size: 17px !important; }
@@ -211,7 +211,7 @@ function ScrollToTop() {
   if (!show) return null
   return (
     <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} title="Наверх" className="scroll-to-top"
-      style={{ position: 'fixed', bottom: 24, right: 24, width: 48, height: 48, borderRadius: '50%', background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 22, boxShadow: 'var(--shadow)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>↑</button>
+      style={{ position: 'fixed', bottom: 88, right: 24, width: 48, height: 48, borderRadius: '50%', background: 'var(--accent)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 22, boxShadow: 'var(--shadow)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>↑</button>
   )
 }
 
@@ -345,7 +345,7 @@ function PostCard({ post, currentUsername, expandedPostId, commentTexts, replyTo
   const commentTree = buildCommentTree(post.comments)
   return (
     <div className="post-card-enter" style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 16, background: isEditing ? 'var(--bg-card-edit)' : 'var(--bg-card)', opacity: inTrash ? 0.75 : 1 }}>
-      {post.is_hidden && <div style={{ fontSize: 12, color: 'var(--danger)', marginBottom: 8, padding: '4px 8px', background: 'rgba(220,53,69,0.1)', borderRadius: 4, display: 'inline-block' }}>🚫 Скрыто модератором</div>}
+      {post.is_hidden && <div style={{ fontSize: 12, color: 'var(--danger)', marginBottom: 8, padding: '4px 8px', background: 'rgba(184,92,92,0.1)', borderRadius: 4, display: 'inline-block' }}>🚫 Скрыто модератором</div>}
       {isRepost && <div style={{ fontSize: 12, color: 'var(--success)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>🔄 Репост от <strong>{post.repost_of_author}</strong></div>}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
@@ -538,7 +538,7 @@ function ReportModal({ targetType, onClose, onSubmit }: ReportModalProps) {
   }
   const typeLabel = targetType === 'post' ? 'пост' : targetType === 'comment' ? 'комментарий' : targetType === 'group' ? 'группу' : 'пользователя'
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }} onClick={onClose}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }} onClick={onClose}>
       <div className="modal-box" style={{ background: 'var(--bg-panel)', borderRadius: 12, padding: 24, maxWidth: 420, width: '100%', border: '1px solid var(--border)' }} onClick={e => e.stopPropagation()}>
         <h3 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)' }}>🚩 Жалоба на {typeLabel}</h3>
         <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '0 0 16px 0' }}>Помогите нам сделать сообщество безопаснее.</p>
@@ -568,7 +568,7 @@ function CreateGroupModal({ onClose, onCreate }: { onClose: () => void; onCreate
     try { await onCreate(name.trim(), description.trim(), emoji, isPrivate) } catch (e: any) { setError(e.message || 'Ошибка') } finally { setSending(false) }
   }
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }} onClick={onClose}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }} onClick={onClose}>
       <div className="modal-box" style={{ background: 'var(--bg-panel)', borderRadius: 12, padding: 24, maxWidth: 460, width: '100%', border: '1px solid var(--border)', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
         <h3 style={{ margin: '0 0 4px 0', color: 'var(--text-primary)' }}>✨ Создать группу</h3>
         <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '0 0 16px 0' }}>Объединяйте людей по интересам</p>
@@ -705,6 +705,9 @@ function App() {
   const [totalStats, setTotalStats] = useState<TotalStats | null>(null)
   const [analyticsLoading, setAnalyticsLoading] = useState(false)
 
+  const [showMenu, setShowMenu] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
   const authHeaders = (t: string | null): Record<string, string> => t ? { 'Authorization': `Bearer ${t}` } : {}
 
   useEffect(() => {
@@ -715,6 +718,13 @@ function App() {
   }, [])
 
   useEffect(() => { document.documentElement.classList.toggle('dark', theme === 'dark'); localStorage.setItem('theme', theme) }, [theme])
+
+  useEffect(() => {
+    if (!showMenu) return
+    const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false) }
+    setTimeout(() => document.addEventListener('mousedown', h), 0)
+    return () => document.removeEventListener('mousedown', h)
+  }, [showMenu])
 
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
 
@@ -1408,44 +1418,64 @@ function App() {
 
   if (!token) return <Auth onLogin={handleLogin} />
 
-  const ThemeButton = () => (
-    <button onClick={toggleTheme} title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px 8px', lineHeight: 1, color: 'var(--text-primary)' }}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+  const BottomNav = () => (
+    <div style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0,
+      background: 'var(--bg-panel)', borderTop: '1px solid var(--border)',
+      display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+      padding: '8px 0', zIndex: 400,
+      paddingBottom: 'max(8px, env(safe-area-inset-bottom))'
+    }}>
+      <button onClick={handleBackToFeed} title="Лента" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, padding: '6px 16px', color: viewMode === 'feed' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        🏠<span style={{ fontSize: 10 }}>Лента</span>
+      </button>
+      <button onClick={handleOpenMessages} title="Сообщения" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, padding: '6px 16px', position: 'relative', color: viewMode === 'messages' || viewMode === 'dialog' ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        ✉️
+        {unreadMessages > 0 && <span style={{ position: 'absolute', top: 0, right: 8, background: 'var(--danger)', color: '#fff', fontSize: 10, fontWeight: 'bold', borderRadius: '50%', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{unreadMessages > 99 ? '99+' : unreadMessages}</span>}
+        <span style={{ fontSize: 10 }}>Сообщения</span>
+      </button>
+      <button onClick={() => handleAuthorClick(username)} title="Профиль" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, padding: '6px 16px', color: viewMode === 'profile' && viewingUser === username ? 'var(--accent)' : 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        👤<span style={{ fontSize: 10 }}>Профиль</span>
+      </button>
+    </div>
   )
 
   const Header = ({ backButton = false, backLabel = '← Назад', customBack }: { backButton?: boolean; backLabel?: string; customBack?: () => void }) => (
-    <div className="app-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 8 }}>
+    <div className="app-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 8, position: 'relative' }}>
       {backButton ? (
-        <button onClick={customBack || handleBackToFeed} style={{ padding: '6px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer', fontSize: 13, flexShrink: 0 }}>{backLabel}</button>
+        <button onClick={customBack || handleBackToFeed} style={{ padding: '6px 12px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', fontSize: 13, flexShrink: 0 }}>{backLabel}</button>
       ) : (
-        <h1 onClick={() => handleAuthorClick(username)} style={{ cursor: 'pointer', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>Моя соцсеть</h1>
+        <div ref={menuRef} style={{ position: 'relative' }}>
+          <button onClick={() => setShowMenu(v => !v)} title="Меню" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, padding: '4px 8px', lineHeight: 1, color: 'var(--text-primary)' }}>☰</button>
+          {showMenu && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 8, minWidth: 200, background: 'var(--bg-panel)', border: '1px solid var(--border)', borderRadius: 8, boxShadow: 'var(--shadow)', zIndex: 200, overflow: 'hidden' }}>
+              <button onClick={() => { setShowMenu(false); handleAuthorClick(username) }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>👤 Профиль</button>
+              <button onClick={() => { setShowMenu(false); handleOpenGroups() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>📁 Группы</button>
+              <button onClick={() => { setShowMenu(false); handleOpenBookmarks() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>🔖 Сохранённые</button>
+              <button onClick={() => { setShowMenu(false); handleOpenTrash() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>🗑️ Корзина</button>
+              {isAdmin && (
+                <>
+                  <button onClick={() => { setShowMenu(false); handleOpenModeration() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>⚙️ Модерация {pendingReports > 0 && `(${pendingReports})`}</button>
+                  <button onClick={() => { setShowMenu(false); handleOpenAnalytics() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>📊 Аналитика</button>
+                </>
+              )}
+              <button onClick={() => { toggleTheme(); setShowMenu(false) }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-primary)' }}>{theme === 'dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема'}</button>
+              <button onClick={() => { setShowMenu(false); handleLogout() }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--danger)' }}>🚪 Выйти</button>
+            </div>
+          )}
+        </div>
       )}
-      <div className="app-header-buttons" style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-        <ThemeButton />
-        {isAdmin && (
-          <>
-            <button onClick={handleOpenModeration} title="Модерация" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px 8px', position: 'relative', lineHeight: 1, color: 'var(--text-primary)' }}>
-              ⚙️
-              {pendingReports > 0 && <span style={{ position: 'absolute', top: 0, right: 0, background: 'var(--danger)', color: '#fff', fontSize: 10, fontWeight: 'bold', borderRadius: '50%', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{pendingReports > 99 ? '99+' : pendingReports}</span>}
-            </button>
-            <button onClick={handleOpenAnalytics} title="Аналитика" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px 8px', lineHeight: 1, color: 'var(--text-primary)' }}>📊</button>
-          </>
-        )}
-        <button onClick={handleOpenGroups} title="Группы" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px 8px', lineHeight: 1, color: 'var(--text-primary)' }}>📁</button>
-        <button onClick={handleOpenBookmarks} title="Сохранённые" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px 8px', lineHeight: 1, color: 'var(--text-primary)' }}>🔖</button>
-        <button onClick={handleOpenMessages} title="Сообщения" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, padding: '4px 8px', position: 'relative', lineHeight: 1, color: 'var(--text-primary)' }}>
-          ✉️
-          {unreadMessages > 0 && <span style={{ position: 'absolute', top: 0, right: 0, background: 'var(--danger)', color: '#fff', fontSize: 10, fontWeight: 'bold', borderRadius: '50%', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 3px' }}>{unreadMessages > 99 ? '99+' : unreadMessages}</span>}
-        </button>
+      <h1 onClick={() => handleAuthorClick(username)} style={{ cursor: 'pointer', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2, fontSize: 18, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>Моя соцсеть</h1>
+      <div className="app-header-buttons" style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 4 }}>
         <NotificationBell unreadCount={unreadCount} notifications={notifications} isOpen={showNotifs} onToggle={handleToggleNotifs} onMarkAllRead={handleMarkAllRead} onNotificationClick={handleNotifClick} />
-        <span onClick={() => handleAuthorClick(username)} style={{ marginRight: 4, color: 'var(--text-secondary)', cursor: 'pointer', whiteSpace: 'nowrap' }}>👤 <strong>{username}</strong>{isAdmin && ' 👑'}</span>
-        <button onClick={handleLogout} style={{ padding: '6px 12px', background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 13 }}>Выйти</button>
       </div>
     </div>
   )
 
   if (viewMode === 'analytics' && isAdmin) {
     return (
-      <div style={{ maxWidth: 700, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 700, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← К ленте" />
         <h2 style={{ color: 'var(--text-primary)' }}>📊 Аналитика</h2>
         {analyticsLoading && <FeedSkeleton />}
@@ -1461,8 +1491,8 @@ function App() {
         {!analyticsLoading && dailyStats && (
           <>
             <h3 style={{ color: 'var(--text-primary)', marginTop: 20 }}>📈 Активность за 14 дней</h3>
-            <BarChart data={dailyStats.posts} color="#28a745" label="📝 Посты в день" />
-            <BarChart data={dailyStats.users} color="#007bff" label="👥 Новые пользователи" />
+            <BarChart data={dailyStats.posts} color="#5c9e6e" label="📝 Посты в день" />
+            <BarChart data={dailyStats.users} color="#4a6fa5" label="👥 Новые пользователи" />
             <BarChart data={dailyStats.comments} color="#8b5cf6" label="💬 Комментарии" />
           </>
         )}
@@ -1488,7 +1518,8 @@ function App() {
   if (viewMode === 'group' && viewingGroup !== null) {
     const g = viewingGroup
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← К группам" customBack={handleOpenGroups} />
         {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
         <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 20, marginBottom: 20, background: 'var(--bg-card)' }}>
@@ -1571,7 +1602,8 @@ function App() {
   if (viewMode === 'groups') {
     const list = groupsTab === 'all' ? groups : myGroups
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← К ленте" />
         {showCreateGroup && <CreateGroupModal onClose={() => setShowCreateGroup(false)} onCreate={handleCreateGroup} />}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 8 }}>
@@ -1609,7 +1641,8 @@ function App() {
 
   if (viewMode === 'moderation' && isAdmin) {
     return (
-      <div style={{ maxWidth: 700, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 700, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← К ленте" />
         <h2 style={{ color: 'var(--text-primary)' }}>⚙️ Панель модератора</h2>
         <div style={{ display: 'flex', gap: 6, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -1646,7 +1679,7 @@ function App() {
             {r.status === 'pending' && (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button onClick={() => handleResolveReport(r.id, 'hide', false)} style={{ padding: '6px 14px', fontSize: 13, background: 'var(--danger)', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>🚫 Скрыть</button>
-                {(r.target_type === 'post' || r.target_type === 'comment') && <button onClick={() => handleResolveReport(r.id, 'hide', true)} style={{ padding: '6px 14px', fontSize: 13, background: '#b91c1c', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>🚫 Скрыть + забанить</button>}
+                {(r.target_type === 'post' || r.target_type === 'comment') && <button onClick={() => handleResolveReport(r.id, 'hide', true)} style={{ padding: '6px 14px', fontSize: 13, background: '#9e4a4a', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>🚫 Скрыть + забанить</button>}
                 {r.target_type === 'user' && <button onClick={async () => { if (!token) return; if (!window.confirm('Забанить?')) return; try { const res = await fetch(`${API_URL}/admin/users/${r.target_id}/ban`, { method: 'POST', headers: authHeaders(token) }); if (!res.ok) throw new Error(); loadReports(token, reportFilter) } catch { alert('Ошибка') } }} style={{ padding: '6px 14px', fontSize: 13, background: '#7c2d12', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}>⛔ Забанить</button>}
                 <button onClick={() => handleResolveReport(r.id, 'dismiss', false)} style={{ padding: '6px 14px', fontSize: 13, background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 4, cursor: 'pointer' }}>✅ Отклонить</button>
               </div>
@@ -1659,7 +1692,8 @@ function App() {
 
   if (viewMode === 'bookmarks') {
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← К ленте" />
         <h2 style={{ color: 'var(--text-primary)' }}>🔖 Сохранённые посты</h2>
         {bookmarksLoading && <FeedSkeleton />}
@@ -1671,7 +1705,8 @@ function App() {
 
   if (viewMode === 'trash') {
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← К ленте" />
         <h2 style={{ color: 'var(--text-primary)' }}>🗑️ Корзина</h2>
         {trashLoading && <FeedSkeleton />}
@@ -1683,7 +1718,8 @@ function App() {
 
   if (viewMode === 'post') {
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← Назад к ленте" />
         {!focusedPost && <FeedSkeleton />}
         {focusedPost && <PostWrapper><PostCard post={focusedPost} {...postCardProps} /></PostWrapper>}
@@ -1693,7 +1729,8 @@ function App() {
 
   if (viewMode === 'dialog' && dialogUser) {
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← К сообщениям" customBack={handleOpenMessages} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, padding: 12, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-panel)' }}>
           {dialog?.user && <Avatar url={dialog.user.avatar} username={dialog.user.username} size={48} />}
@@ -1722,7 +1759,8 @@ function App() {
 
   if (viewMode === 'messages') {
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← К ленте" />
         <h2 style={{ color: 'var(--text-primary)' }}>✉️ Сообщения</h2>
         {convsLoading && <FeedSkeleton />}
@@ -1746,7 +1784,8 @@ function App() {
 
   if (viewMode === 'hashtag' && viewingHashtag) {
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← Назад к ленте" />
         <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 20, marginBottom: 24, background: 'var(--bg-card)' }}>
           <h1 style={{ margin: '0 0 8px 0', color: 'var(--accent)' }}>#{viewingHashtag}</h1>
@@ -1764,13 +1803,14 @@ function App() {
     const profIsAdmin = !!profile?.user.is_admin
     const profIsBanned = !!profile?.user.is_banned
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+      <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+        <BottomNav />
         <Header backButton backLabel="← Назад к ленте" />
         {profileLoading && <FeedSkeleton />}
         {!profileLoading && profile && (
           <>
             <div style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 20, marginBottom: 24, background: 'var(--bg-card)' }}>
-              {profIsBanned && <div style={{ marginBottom: 12, padding: '6px 12px', background: 'rgba(220,53,69,0.15)', color: 'var(--danger)', borderRadius: 4, fontSize: 13 }}>🚫 Пользователь заблокирован</div>}
+              {profIsBanned && <div style={{ marginBottom: 12, padding: '6px 12px', background: 'rgba(184,92,92,0.15)', color: 'var(--danger)', borderRadius: 4, fontSize: 13 }}>🚫 Пользователь заблокирован</div>}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 16, flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                   <div className="profile-avatar"><Avatar url={profile.user.avatar} username={profile.user.username} size={80} /></div>
@@ -1820,8 +1860,9 @@ function App() {
   ) : null)
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
+    <div className="has-bottom-nav" style={{ maxWidth: 600, margin: '0 auto', padding: 20, fontFamily: 'sans-serif' }}>
       <ScrollToTop />
+      <BottomNav />
       <Header />
       {reportModal && <ReportModal targetType={reportModal.type} onClose={() => setReportModal(null)} onSubmit={handleSubmitReport} />}
 
