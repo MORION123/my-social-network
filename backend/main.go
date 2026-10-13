@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/rand"
 	"fmt"
 	"math/big"
@@ -18,6 +19,7 @@ import (
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/api/idtoken"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -241,6 +243,7 @@ func main() {
 	})
 	r.POST("/api/register", registerHandler)
 	r.POST("/api/login", loginHandler)
+	r.POST("/api/auth/google", googleAuthHandler)
 	r.GET("/api/verify", verifyEmailHandler)
 	r.GET("/api/posts", getPostsHandler)
 	r.GET("/api/posts/:id", getPostHandler)
@@ -447,6 +450,93 @@ func loginHandler(c *gin.Context) {
 
 	if !user.IsVerified {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Email не подтвержден. Проверьте почту."})
+		return
+	}
+
+	token, err := generateToken(user.ID, user.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка генерации токена"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"user":  gin.H{"id": user.ID, "username": user.Username, "email": user.Email, "avatar": user.Avatar, "is_admin": user.IsAdmin},
+	})
+}
+
+func googleAuthHandler(c *gin.Context) {
+	var input struct {
+		IDToken string `json:"id_token" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id_token обязателен"})
+		return
+	}
+
+	clientID := os.Getenv("GOOGLE_CLIENT_ID")
+	if clientID == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "GOOGLE_CLIENT_ID не настроен"})
+		return
+	}
+
+	payload, err := idtoken.Validate(context.Background(), input.IDToken, clientID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Неверный Google токен"})
+		return
+	}
+
+	email, _ := payload.Claims["email"].(string)
+	name, _ := payload.Claims["name"].(string)
+	if email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email не найден в Google токене"})
+		return
+	}
+
+	var user User
+	result := db.Where("email = ?", email).First(&user)
+
+	if result.Error != nil {
+		username := strings.Split(email, "@")[0]
+		if len(username) < 3 {
+			username = "user_" + generateRandomToken()
+		}
+
+		var count int64
+		db.Model(&User{}).Where("username = ?", username).Count(&count)
+		if count > 0 {
+			username = username + "_" + generateRandomToken()
+		}
+
+		user = User{
+			Username:   username,
+			Email:      email,
+			IsVerified: true,
+		}
+
+		if name != "" {
+			candidate := name
+			db.Model(&User{}).Where("username = ?", candidate).Count(&count)
+			if count == 0 {
+				user.Username = candidate
+			}
+		}
+
+		if err := db.Create(&user).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось создать пользователя"})
+			return
+		}
+
+		var userCount int64
+		db.Model(&User{}).Count(&userCount)
+		if userCount == 1 {
+			user.IsAdmin = true
+			db.Save(&user)
+		}
+	}
+
+	if user.IsBanned {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Аккаунт заблокирован"})
 		return
 	}
 
